@@ -21,10 +21,26 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.wdellh.ErkadoApp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "@rnmapbox/maps",
+        {
+          "RNMapboxMapsImpl": "mapbox",
+          "RNMapboxMapsDownloadToken": "sk.eyJ1IjoiemVsbGRlbGwiLCJhIjoiY2x0d3hkZWEzMDA5NjJqcW0yb2dvMDJreiJ9.1Pv64yqgJz91imPWK62q0w",
+          "RNMapboxMapsVersion": "11.0.0"
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "a3004553-cde5-4d56-93c6-561f86abbfe7"
+      }
     }
   }
 }
