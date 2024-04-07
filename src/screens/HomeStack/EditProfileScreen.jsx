@@ -15,6 +15,7 @@ import {
   Keyboard,
   ActivityIndicator,
   BackHandler,
+  Animated,
 } from "react-native";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import COLORS from "../../constant/colors";
@@ -32,7 +33,7 @@ import { useDispatch, useSelector } from "react-redux";
 function EditProfileScreen() {
   const dispatch = useDispatch();
   const textInputRef = useRef(null);
-  isFarmer = useSelector((state) => state.ui.isFarmer);
+  const isFarmer = useSelector((state) => state.ui.isFarmer);
   const [userInformation, setUserInformation] = useState({
     fullname: "",
     address: "",
@@ -246,7 +247,7 @@ function EditProfileScreen() {
     );
     if (!existingCrop) {
       if (isFarmer) {
-        setCrops([...crops, { selectedCrop, quantity: 1 }]);
+        setCrops([...crops, { selectedCrop }]);
       } else {
         setSelectedCrop(selectedCrop);
         handlePriceModal();
@@ -288,59 +289,6 @@ function EditProfileScreen() {
       (crop) => crop.selectedCrop.CropID !== cropToRemove.CropID
     );
     setCrops(updatedCrops);
-  };
-
-  const handleQuantity = (cropID, value) => {
-    const numericValue = parseFloat(value);
-    if (!isNaN(numericValue) && numericValue <= 2000) {
-      changeQuantity(cropID, value);
-    } else {
-      changeQuantity(cropID, 0);
-    }
-  };
-
-  const changeQuantity = (cropID, value) => {
-    setCrops((prevCrops) => {
-      return prevCrops.map((crop) => {
-        if (crop.selectedCrop.CropID === cropID) {
-          return {
-            ...crop,
-            quantity: value != "" || value != 0 ? value : "",
-          };
-        }
-        return crop;
-      });
-    });
-  };
-
-  const incrementQuantity = (cropID) => {
-    setCrops((prevCrops) => {
-      return prevCrops.map((crop) => {
-        if (crop.selectedCrop.CropID === cropID) {
-          const newQuantity = crop.quantity + 1;
-          return {
-            ...crop,
-            quantity: newQuantity <= 2000 ? newQuantity : crop.quantity,
-          };
-        }
-        return crop;
-      });
-    });
-  };
-
-  const decrementQuantity = (cropID) => {
-    setCrops((prevCrops) => {
-      return prevCrops.map((crop) => {
-        if (crop.selectedCrop.CropID === cropID) {
-          const newQuantity = crop.quantity - 1;
-          return {
-            ...crop,
-            quantity: newQuantity >= 0 ? newQuantity : crop.quantity,
-          };
-        }
-        return crop;
-      });
-    });
   };
 
   useEffect(() => {
@@ -398,10 +346,36 @@ function EditProfileScreen() {
     );
     setIsLoading(false);
   };
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    const keyboardDidShow = () => {
+      setKeyboardVisible(true);
+    };
+
+    const keyboardDidHide = () => {
+      setKeyboardVisible(false); // After animation completion, set visibility to false
+    };
+
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      keyboardDidShow
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      keyboardDidHide
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View className="bg-gray-100 pt-5 flex-1 p-5 items-center">
-        <View className="flex-2  mt-5">
+      <View className="bg-gray-100 pt-5 flex-1 py-5 px-3 items-center">
+        <View className="flex-2 mt-5">
           <Text
             className="text-3xl p-4 font-bold"
             style={{ color: COLORS.primary }}
@@ -451,9 +425,6 @@ function EditProfileScreen() {
               handleOpenBottomSheet={handleOpenBottomSheet}
               crops={crops}
               removeCrop={removeCrop}
-              handleQuantity={handleQuantity}
-              incrementQuantity={incrementQuantity}
-              decrementQuantity={decrementQuantity}
               updatePrice={updatePrice}
               handlePriceModal={handlePriceModal}
               priceModal={priceModal}
@@ -464,53 +435,57 @@ function EditProfileScreen() {
           )}
         </View>
         {/* Preve - Next - Submit */}
-        <View className="flex-2 flex-row space-x-4 w-11/12 ">
-          {page > 1 && (
-            <TouchableOpacity
-              className="flex-1 py-4 rounded-xl  bg-gray-400"
-              onPress={handlePrev}
-              disabled={isLoading}
-            >
-              <Text className="font-bold text-white text-xl text-center">
-                Back
-              </Text>
-            </TouchableOpacity>
-          )}
 
-          {page < totalNumberOfPages && (
-            <TouchableOpacity
-              className="py-4 rounded-xl flex-1"
-              style={{ backgroundColor: COLORS.primary }}
-              activeOpacity={0.6}
-              onPress={handleNext}
-            >
-              <Text className="text-white text-center font-bold text-xl">
-                Next
-              </Text>
-            </TouchableOpacity>
-          )}
-
-          {page === totalNumberOfPages && (
-            <TouchableOpacity
-              className="flex-1 py-4 rounded-xl "
-              style={{ backgroundColor: COLORS.primary }}
-              onPress={handleSetProfile}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <ActivityIndicator
-                  size="small"
-                  color="#ffffff"
-                  className="self-center"
-                />
-              ) : (
+        {!isKeyboardVisible && (
+          <View className="flex-2 flex-row space-x-4 w-11/12">
+            {page > 1 && (
+              <TouchableOpacity
+                className="flex-1 py-4 rounded-xl  bg-gray-400"
+                onPress={handlePrev}
+                disabled={isLoading}
+              >
                 <Text className="font-bold text-white text-xl text-center">
-                  Submit
+                  Back
                 </Text>
-              )}
-            </TouchableOpacity>
-          )}
-        </View>
+              </TouchableOpacity>
+            )}
+
+            {page < totalNumberOfPages && (
+              <TouchableOpacity
+                className="py-4 rounded-xl flex-1"
+                style={{ backgroundColor: COLORS.primary }}
+                activeOpacity={0.6}
+                onPress={handleNext}
+              >
+                <Text className="text-white text-center font-bold text-xl">
+                  Next
+                </Text>
+              </TouchableOpacity>
+            )}
+
+            {page === totalNumberOfPages && (
+              <TouchableOpacity
+                className="flex-1 py-4 rounded-xl "
+                style={{ backgroundColor: COLORS.primary }}
+                onPress={handleSetProfile}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <ActivityIndicator
+                    size="small"
+                    color="#ffffff"
+                    className="self-center"
+                  />
+                ) : (
+                  <Text className="font-bold text-white text-xl text-center">
+                    Submit
+                  </Text>
+                )}
+              </TouchableOpacity>
+            )}
+          </View>
+        )}
+
         {page === 3 && (
           <AddCropBottomSheet
             bottomSheetRef={bottomSheetRef}

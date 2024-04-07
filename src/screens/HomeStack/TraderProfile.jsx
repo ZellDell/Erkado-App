@@ -62,6 +62,7 @@ function TraderProfile() {
     };
     requestuserinfo();
   }, []);
+
   const [mapInteraction, setMapInteraction] = useState(false);
   const handleNewUserModal = () => {
     setNewUserModal(!newUserModal);

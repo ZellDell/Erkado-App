@@ -24,6 +24,8 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import Mapbox from "@rnmapbox/maps";
 import { requestCrops } from "./src/features/crop-actions";
+import TraderView from "./src/screens/SearchStack/TraderView";
+import TraderRoute from "./src/screens/SearchStack/TraderRoute";
 
 Mapbox.setAccessToken(
   "pk.eyJ1IjoiemVsbGRlbGwiLCJhIjoiY2x0d3hjdG91MDBheTJqczdqcHRjdWhpZSJ9.UyWdrUlPhJlQN-XE_JoP6Q"
@@ -82,6 +84,7 @@ const AuthStack = () => {
             options={{ headerShown: false, animation: "slide_from_right" }}
             component={UserTypeScreen}
           />
+
           <Stack.Screen
             name="Credentials"
             options={{ headerShown: false, animation: "slide_from_right" }}
@@ -103,6 +106,16 @@ const MainStack = () => {
           name="Tabs"
           component={Tabs}
           options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="TraderView"
+          component={TraderView}
+          options={{ headerShown: false, animation: "slide_from_right" }}
+        />
+        <Stack.Screen
+          name="TraderRoute"
+          component={TraderRoute}
+          options={{ headerShown: false, animation: "slide_from_right" }}
         />
 
         {isNewUser && (

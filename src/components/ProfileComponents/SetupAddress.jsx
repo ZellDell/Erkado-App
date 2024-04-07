@@ -119,7 +119,7 @@ function SetupAddress(props) {
 
 export default SetupAddress;
 
-const PlaceSuggestionList = ({ placesAutocomplete, onPlaceSelect, props }) => {
+const PlaceSuggestionList = ({ placesAutocomplete, props }) => {
   return (
     <View
       className="w-full absolute top-16 mt-2 border-2"

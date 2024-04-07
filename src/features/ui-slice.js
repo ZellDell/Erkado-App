@@ -13,6 +13,7 @@ const uiSlice = createSlice({
     },
     setAsNewUser(state, action) {
       state.isNewUser = action.payload;
+      console.log("isNewUser", state.isNewUser);
     },
     setFarmer(state, action) {
       state.isFarmer = action.payload;

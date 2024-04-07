@@ -68,8 +68,6 @@ export const setUserInfo = ({
   crops,
 }) => {
   return async (dispatch, getState) => {
-    console.log(fullname + " " + address + " " + extraInfo + " " + profileImg);
-    console.log("Crops : ", crops);
     const state = getState();
     const sendRequest = async () => {
       // const userID = state.auth.userID;

@@ -43,7 +43,6 @@ function HomeScreen() {
 
   useEffect(() => {
     const requestuserinfo = async () => {
-      console.log("Requesting Info...");
       const result = await dispatch(requestUserInfo());
       if (isNewUser) {
         setNewUserModal(true);

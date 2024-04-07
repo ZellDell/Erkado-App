@@ -54,12 +54,13 @@ function SetupCrops(props) {
           <Text className="text-white text-lg self-center">Add Crops</Text>
         </TouchableOpacity>
       </View>
-      <ScrollView className="mt-8 ">
+      <ScrollView className="mt-8">
         {props.crops && props.crops.length > 0 ? (
           props.crops.map((crop) => (
             <View
               key={crop.selectedCrop.CropID}
-              className="flex-row justify-between items-center bg-zinc-50 mb-5 p-5 rounded-md"
+              className="flex-row justify-between items-center bg-zinc-50 mb-5 p-5 rounded-md mx-3"
+              style={styles.shadow}
             >
               <View className="flex-row space-x-3">
                 <Image
@@ -81,58 +82,7 @@ function SetupCrops(props) {
                 </View>
               </View>
 
-              {isFarmer ? (
-                <View className="flex-row items-center space-x-3">
-                  <TouchableOpacity
-                    onPress={
-                      crop.quantity > 1
-                        ? () =>
-                            props.decrementQuantity(crop.selectedCrop.CropID)
-                        : null
-                    }
-                    disabled={props.isLoading}
-                  >
-                    <Icon
-                      name="remove-circle"
-                      type="ionicon"
-                      color={COLORS.primary}
-                      size={25}
-                    />
-                  </TouchableOpacity>
-
-                  <View>
-                    <Text className="text-slate-400 text-xs">Quantity</Text>
-                    <TextInput
-                      className=" border-b-2 border-gray-600 text-center"
-                      onChangeText={(value) =>
-                        props.handleQuantity(crop.selectedCrop.CropID, value)
-                      }
-                      value={crop?.quantity.toString()}
-                      keyboardType="numeric"
-                      onBlur={(event) => {
-                        const value =
-                          event._dispatchInstances.memoizedProps.value;
-                        if (value === "" || parseFloat(value) === 0) {
-                          props.handleQuantity(crop.selectedCrop.CropID, "1");
-                        }
-                      }}
-                    />
-                  </View>
-                  <TouchableOpacity
-                    onPress={() =>
-                      props.incrementQuantity(crop.selectedCrop.CropID)
-                    }
-                    disabled={props.isLoading}
-                  >
-                    <Icon
-                      name="add-circle"
-                      type="ionicon"
-                      color={COLORS.primary}
-                      size={25}
-                    />
-                  </TouchableOpacity>
-                </View>
-              ) : (
+              {!isFarmer && (
                 <TouchableOpacity
                   onPress={() => {
                     props.updatePrice(crop.selectedCrop, crop.price);
@@ -169,5 +119,24 @@ function SetupCrops(props) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  shadow: {
+    ...Platform.select({
+      ios: {
+        shadowColor: "#555555",
+        shadowOffset: {
+          width: 0,
+          height: 5,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4.27,
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
+  },
+});
 
 export default SetupCrops;

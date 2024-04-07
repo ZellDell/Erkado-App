@@ -18,10 +18,16 @@ import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Icon } from "@rneui/base";
 import COLORS from "../../constant/colors";
 import { useDispatch, useSelector } from "react-redux";
+import useQueryTrader from "../../utils/queryTraders";
+import Traderplaceholder from "../../../assets/profile/Default Trader.png";
+import { useNavigation } from "@react-navigation/native";
 
 function SearchScreen() {
   const [query, setQuery] = useState("");
   const { crops } = useSelector((state) => state.crop.crops);
+
+  const queryTrader = useQueryTrader("");
+  const navigation = useNavigation();
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <ScrollView className="flex-1">
@@ -40,11 +46,11 @@ function SearchScreen() {
             <TextInput
               className="flex-1 font-semibold text-lg text-gray-700"
               placeholder="e.g. Crop, Trader Name.."
-              value={query}
-              onChangeText={(text) => setQuery(text)}
+              value={queryTrader.value}
+              onChangeText={(text) => queryTrader.onChangeText(text)}
             />
             {query.length > 0 && (
-              <TouchableOpacity onPress={() => setQuery("")}>
+              <TouchableOpacity onPress={() => queryTrader.onChangeText("")}>
                 <Icon
                   name="close-circle"
                   type="ionicon"
@@ -55,51 +61,106 @@ function SearchScreen() {
             )}
           </View>
 
-          <View className="flex-row w-full">
-            <ScrollView
-              className="flex-row space-x-2"
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{
-                flex: 1,
-                flexDirection: "row",
-                flexWrap: "wrap",
-                justifyContent: "flex-start",
-                marginRight: -200,
-              }}
-            >
-              {crops.map((crop) => (
-                <TouchableHighlight
-                  key={crop.CropID}
-                  className="flex-row bg-white items-center rounded-full px-3 border-2 border-gray-300 mt-2"
-                  onPress={() => {}}
-                >
-                  <>
-                    <Image
-                      source={{ uri: crop.Uri }}
-                      style={{ width: 20, height: 29 }}
-                      resizeMode="contain"
-                      className="m-1"
-                    />
-                    <Text className="font-[500] text-xs">{crop.CropName}</Text>
-                  </>
-                </TouchableHighlight>
-              ))}
-            </ScrollView>
-          </View>
+          {queryTrader.results?.length > 0 && queryTrader.value ? (
+            <View>
+              {queryTrader.results.map((result, index) => {
+                return (
+                  <TouchableHighlight
+                    key={index}
+                    activeOpacity={1}
+                    underlayColor="#ededed"
+                    onPress={() => {
+                      navigation.navigate("TraderView", {
+                        TraderDetails: result,
+                      });
+                    }}
+                  >
+                    <View className="flex-row border-b-2 border-gray-200 py-4 items-center justify-between">
+                      <View className="flex-row space-x-3">
+                        <Image
+                          source={
+                            result.profileImg
+                              ? { uri: result.profileImg }
+                              : Traderplaceholder
+                          }
+                          style={{ width: 55, height: 55 }}
+                          resizeMode="cover"
+                          className=" rounded-full"
+                        />
+                        <View className="items-start">
+                          <Text className="text-2xl font-bold text-gray-800">
+                            {result?.Fullname.length > 24
+                              ? result?.Fullname.slice(0, 24) + "..."
+                              : result?.Fullname}
+                          </Text>
+                          <Text className="pl-1 text-md font-medium text-gray-400">
+                            {result?.TraderType}
+                          </Text>
+                        </View>
+                      </View>
 
-          <View className="border-t-2 border-gray-300 ">
-            <TouchableOpacity
-              activeOpacity={0.7}
-              className="flex-row justify-center mt-4 py-3 rounded-3xl space-x-2 items-center"
-              style={{ backgroundColor: COLORS.primary }}
-            >
-              <Icon name="map" type="ionicon" color="#FFFFFF" size={20} />
-              <Text className="text-white font-semibold text-md">
-                Proximity Search
-              </Text>
-            </TouchableOpacity>
-          </View>
+                      <Icon
+                        name="caret-forward"
+                        type="ionicon"
+                        color="#000"
+                        size={30}
+                      />
+                    </View>
+                  </TouchableHighlight>
+                );
+              })}
+            </View>
+          ) : (
+            <View className="space-y-5">
+              <View className="flex-row w-full">
+                <ScrollView
+                  className="flex-row space-x-2"
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{
+                    flex: 1,
+                    flexDirection: "row",
+                    flexWrap: "wrap",
+                    justifyContent: "flex-start",
+                    marginRight: -200,
+                  }}
+                >
+                  {crops.map((crop) => (
+                    <TouchableHighlight
+                      key={crop.CropID}
+                      className="flex-row bg-white items-center rounded-full px-3 border-2 border-gray-300 mt-2"
+                      onPress={() => {}}
+                    >
+                      <>
+                        <Image
+                          source={{ uri: crop.Uri }}
+                          style={{ width: 20, height: 29 }}
+                          resizeMode="contain"
+                          className="m-1"
+                        />
+                        <Text className="font-[500] text-xs">
+                          {crop.CropName}
+                        </Text>
+                      </>
+                    </TouchableHighlight>
+                  ))}
+                </ScrollView>
+              </View>
+
+              <View className="border-t-2 border-gray-300 ">
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  className="flex-row justify-center mt-4 py-3 rounded-3xl space-x-2 items-center"
+                  style={{ backgroundColor: COLORS.primary }}
+                >
+                  <Icon name="map" type="ionicon" color="#FFFFFF" size={20} />
+                  <Text className="text-white font-semibold text-md">
+                    Proximity Search
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
         </SafeAreaView>
       </ScrollView>
     </TouchableWithoutFeedback>
