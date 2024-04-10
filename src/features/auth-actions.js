@@ -23,8 +23,15 @@ export const sendLogin = (username, password) => {
 
       const accessToken = result.data.token;
       const userID = result.data.userId;
+      const userType = result.data.UserType;
 
-      const TokenAndID = JSON.stringify({ accessToken, userID });
+      if (userType === "Farmer") {
+        dispatch(uiActions.setFarmer(true));
+      } else {
+        dispatch(uiActions.setFarmer(false));
+      }
+
+      const TokenAndID = JSON.stringify({ accessToken, userID, userType });
 
       await SecureStore.setItemAsync(TOKEN_KEY, TokenAndID);
 
@@ -133,7 +140,13 @@ export const sendIsAuth = () => {
       dispatch(uiActions.setPreparing(true));
 
       const data = await SecureStore.getItemAsync(TOKEN_KEY);
-      const { accessToken, userID } = JSON.parse(data);
+      const { accessToken, userID, userType } = JSON.parse(data);
+
+      if (userType === "Farmer") {
+        dispatch(uiActions.setFarmer(true));
+      } else {
+        dispatch(uiActions.setFarmer(false));
+      }
       if (data != null) {
         dispatch(
           authActions.setAuthState({

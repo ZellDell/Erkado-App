@@ -19,7 +19,6 @@ import {
 } from "react-native";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import COLORS from "../../constant/colors";
-import ProgressBar from "react-native-animated-progress";
 import SetupProfileImage from "../../components/ProfileComponents/SetupProfileImage";
 import * as ImagePicker from "expo-image-picker";
 import SetupAddress from "../../components/ProfileComponents/SetupAddress";
@@ -53,11 +52,11 @@ function EditProfileScreen() {
 
   const [selectedCrop, setSelectedCrop] = useState(null);
   const [currentPrice, setCurrentPrice] = useState(null);
-
-  const [ProgressBarValue, setProgressBarValue] = useState(0);
+  const [currentAttributes, setCurrentAttributes] = useState(null);
 
   const [page, setPage] = useState(1);
-  const totalNumberOfPages = 3;
+  const totalNumberOfPages = isFarmer ? 2 : 3;
+
   const handleNext = () => {
     if (
       (page === 1 && !userInformation.fullname) ||
@@ -72,16 +71,11 @@ function EditProfileScreen() {
       return;
     }
 
-    if (
-      page === 2 &&
-      !userInformation.address &&
-      !userInformation.lat &&
-      !userInformation.long
-    ) {
+    if (page === 2 && !userInformation.address && !myLocation) {
       Toast.show({
         type: "WarningNotif",
-        text1: "Please provide your address",
-        visibilityTime: 4000,
+        text1: "Please Provide a real address",
+        visibilityTime: 3000,
         swipeable: true,
       });
       return;
@@ -89,19 +83,9 @@ function EditProfileScreen() {
     setPage(page + 1);
   };
 
-  useEffect(() => {
-    const setProgress = () => {
-      if (page === 1) setProgressBarValue(33);
-      else if (page === 2) setProgressBarValue(66);
-      else if (page === 3) setProgressBarValue(100);
-    };
-    setProgress();
-  }, [page]);
-
   const handlePrev = () => {
     setPage(page - 1);
   };
-
   const [imageModal, setImageModal] = useState(false);
   const handleModal = () => {
     setImageModal(!imageModal);
@@ -207,6 +191,7 @@ function EditProfileScreen() {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== "granted") {
           alert("Permission to access location was denied");
+
           return;
         }
         let location = await Location.getCurrentPositionAsync({
@@ -226,9 +211,9 @@ function EditProfileScreen() {
 
         textInputRef.current?.focus();
       }
-      setIsGettingLocation(false);
     } catch (err) {
       console.log(err);
+    } finally {
       setIsGettingLocation(false);
     }
   };
@@ -241,54 +226,103 @@ function EditProfileScreen() {
     bottomSheetRef.current?.close();
   };
 
-  const handleSelectedCrop = async (selectedCrop) => {
-    const existingCrop = crops.find(
-      (crop) => crop.selectedCrop.CropID === selectedCrop.CropID
-    );
-    if (!existingCrop) {
-      if (isFarmer) {
-        setCrops([...crops, { selectedCrop }]);
-      } else {
-        setSelectedCrop(selectedCrop);
-        handlePriceModal();
-      }
-      // Create a new array with the selected crop appended
-
-      // Update the state with the new array of crops
-    }
-
+  const handleSelectedCrop = async (selected) => {
+    setSelectedCrop(selected);
+    handlePriceModal();
     bottomSheetRef.current?.close();
   };
 
-  const updatePrice = (crop, price) => {
+  const updateCrop = (crop, quality, type, price) => {
     setSelectedCrop(crop);
+    setCurrentAttributes({ quality, type });
     setCurrentPrice(price);
     handlePriceModal();
   };
 
-  const setPrice = (cropPrice, mode) => {
-    if (mode === "updatePrice") {
-      const updatedCrops = crops.map((crop) =>
-        crop.selectedCrop.CropID === selectedCrop.CropID
-          ? { ...crop, price: cropPrice }
-          : crop
-      );
-      setCrops(updatedCrops);
-      handlePriceModal();
-      setCurrentPrice(null);
-      return;
+  const clearCurrents = () => {
+    setSelectedCrop(null);
+    setCurrentAttributes(null);
+    setCurrentPrice(null);
+  };
+  const setCrop = (quality, type, cropPrice, mode) => {
+    const existingCrop = crops.find(
+      (crop) =>
+        crop.selectedCrop.CropID == selectedCrop.CropID &&
+        crop.QualityTypeID == quality &&
+        crop.CropType == type &&
+        crop.Price == cropPrice
+    );
+
+    if (mode === "update") {
+      if (existingCrop) {
+        console.log("There is duplicate -  before: ", crops);
+
+        const updatedCrops = crops.filter(
+          (crop) =>
+            crop.selectedCrop.CropID != selectedCrop.CropID ||
+            crop.QualityTypeID != currentAttributes.quality ||
+            crop.CropType != currentAttributes.type ||
+            crop.Price != currentPrice
+        );
+
+        setCrops(updatedCrops);
+        console.log("Duplicate after ", updatedCrops);
+        handlePriceModal();
+        setSelectedCrop(null);
+        return;
+      } else {
+        const updatedCrops = crops.map((crop) => {
+          return crop.selectedCrop.CropID == selectedCrop.CropID &&
+            crop.QualityTypeID == currentAttributes.quality &&
+            crop.CropType == currentAttributes.type &&
+            crop.Price == currentPrice
+            ? {
+                ...crop,
+                QualityTypeID: quality,
+                CropType: type,
+                Price: cropPrice,
+              }
+            : crop;
+        });
+        console.log("no duplicates : ", updatedCrops);
+        setCrops(updatedCrops);
+        handlePriceModal();
+        setSelectedCrop(null);
+        return;
+      }
+    }
+
+    console.log("Existing crop : ", existingCrop);
+    if (!existingCrop) {
+      setCrops([
+        ...crops,
+        {
+          selectedCrop,
+          QualityTypeID: quality,
+          CropType: type,
+          Price: cropPrice,
+        },
+      ]);
     }
 
     handlePriceModal();
-    setCrops([...crops, { selectedCrop, price: cropPrice }]);
     setSelectedCrop(null);
+    clearCurrents();
   };
 
-  const removeCrop = (cropToRemove) => {
-    const updatedCrops = crops.filter(
-      (crop) => crop.selectedCrop.CropID !== cropToRemove.CropID
+  const removeCrop = async (cropToRemove) => {
+    console.log(crops);
+
+    const updatedCrops = await crops.filter(
+      (crop) =>
+        crop.QualityTypeID != cropToRemove.QualityTypeID ||
+        crop.CropType != cropToRemove.CropType ||
+        crop.Price != cropToRemove.Price ||
+        crop.selectedCrop.CropID != cropToRemove.selectedCrop.CropID
     );
+
     setCrops(updatedCrops);
+    clearCurrents();
   };
 
   useEffect(() => {
@@ -312,15 +346,16 @@ function EditProfileScreen() {
   }, [page]); // Re-run the effect whenever the page state changes
 
   const handleSetProfile = async () => {
-    if (crops.length === 0) {
+    if ((isFarmer && !userInformation.address) || !myLocation) {
       Toast.show({
         type: "WarningNotif",
-        text1: "Please Add your Crops",
-        visibilityTime: 5000,
+        text1: "Please provide a real address",
+        visibilityTime: 3000,
         swipeable: true,
       });
       return;
     }
+
     setIsLoading(true);
 
     let profileImg = null;
@@ -342,6 +377,7 @@ function EditProfileScreen() {
         extraInfo: userInformation.extraInfo,
         profileImg,
         crops,
+        isFarmer,
       })
     );
     setIsLoading(false);
@@ -383,15 +419,7 @@ function EditProfileScreen() {
             Edit Profile
           </Text>
         </View>
-        <View className="flex-2 w-3/5">
-          <ProgressBar
-            progress={ProgressBarValue}
-            height={7}
-            backgroundColor="#60BB46"
-            className="self-center"
-            trackColor="#ebeaeb"
-          />
-        </View>
+        <View className="flex-2 w-3/5"></View>
         {/* STEPS */}
         <View className="flex-1 w-11/12  mt-10">
           {page === 1 && (
@@ -425,12 +453,15 @@ function EditProfileScreen() {
               handleOpenBottomSheet={handleOpenBottomSheet}
               crops={crops}
               removeCrop={removeCrop}
-              updatePrice={updatePrice}
               handlePriceModal={handlePriceModal}
               priceModal={priceModal}
-              setPrice={setPrice}
               currentPrice={currentPrice}
               isLoading={isLoading}
+              selectedCrop={selectedCrop}
+              updateCrop={updateCrop}
+              setCrop={setCrop}
+              currentAttributes={currentAttributes}
+              clearCurrents={clearCurrents}
             />
           )}
         </View>

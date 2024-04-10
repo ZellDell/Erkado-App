@@ -14,7 +14,7 @@ import {
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Logout } from "../../features/auth-actions";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { requestUserInfo } from "../../features/user-actions";
 import COLORS from "../../constant/colors";
 import Farmerplaceholder from "../../../assets/profile/Default Farmer.png";
@@ -28,11 +28,14 @@ import Modal from "react-native-modal";
 import NewUserGreetingsModal from "../../components/HomeComponents/NewUserGreetingsModal";
 import { Icon } from "@rneui/base";
 import Toast from "react-native-toast-message";
+import { fetchTransaction } from "../../features/transaction-actions";
 
 function HomeScreen() {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const [newUserModal, setNewUserModal] = useState(false);
+
+  const UserType = useSelector((state) => state.user.userInfo.userType);
 
   const isNewUser = useSelector((state) => state.ui.isNewUser);
   const isFarmer = useSelector((state) => state.ui.isFarmer);
@@ -44,6 +47,7 @@ function HomeScreen() {
   useEffect(() => {
     const requestuserinfo = async () => {
       const result = await dispatch(requestUserInfo());
+
       if (isNewUser) {
         setNewUserModal(true);
       }
@@ -126,12 +130,12 @@ function HomeScreen() {
                       className="bg-gray-50 px-3 py-2 w-5/12 rounded-lg"
                       style={{ width: "45%" }}
                     >
-                      <Text className="font-bold text-md">Crops</Text>
+                      <Text className="font-bold text-md">Pending</Text>
                       <Text
                         className="font-bold text-lg"
                         style={{ color: COLORS.primary }}
                       >
-                        {crops.length}
+                        ---
                       </Text>
                     </View>
                     <View
@@ -143,7 +147,7 @@ function HomeScreen() {
                         className="font-bold text-lg"
                         style={{ color: COLORS.primary }}
                       >
-                        0
+                        ---
                       </Text>
                     </View>
                   </View>
@@ -176,7 +180,14 @@ function HomeScreen() {
                       key={crop.CropID}
                       className="flex bg-white items-center rounded-full py-2 px-4 border-2"
                       style={{ borderColor: COLORS.primary }}
-                      onPress={() => {}}
+                      onPress={() => {
+                        navigation.navigate("CropSearchTrader", {
+                          cropID: crop.CropID,
+                          cropQuery: crop.CropName,
+                          cropUri: crop.Uri,
+                          cropDescription: crop.Description,
+                        });
+                      }}
                     >
                       <Image
                         source={{ uri: crop.Uri }}
@@ -199,11 +210,7 @@ function HomeScreen() {
                   horizontal
                   showsHorizontalScrollIndicator={false}
                   className="space-x-3"
-                >
-                  <View>
-                    <Text>You have no transactions yet.</Text>
-                  </View>
-                </ScrollView>
+                ></ScrollView>
               </View>
             </View>
           </>

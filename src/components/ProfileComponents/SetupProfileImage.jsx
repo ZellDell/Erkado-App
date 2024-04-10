@@ -15,7 +15,8 @@ import {
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import COLORS from "../../constant/colors";
 import ProgressBar from "react-native-animated-progress";
-import placeholder from "../../../assets/profile/Default Farmer.png";
+import Fplaceholder from "../../../assets/profile/Default Farmer.png";
+import Tplaceholder from "../../../assets/profile/Default Trader.png";
 import { Icon } from "@rneui/base";
 import TextInputField from "../../components/General/TextInputField";
 import ImageModal from "./ImageModal";
@@ -38,9 +39,15 @@ function SetupProfileImage(props) {
         >
           <View className="rounded-full bg-lime-500 shadow-2xl shadow-lime-500">
             <Image
-              source={props.uri ? { uri: props.uri } : placeholder}
+              source={
+                props.uri
+                  ? { uri: props.uri }
+                  : isFarmer
+                  ? Fplaceholder
+                  : Tplaceholder
+              }
               style={{ width: 200, height: 200 }}
-              resizeMode="contain"
+              resizeMode="cover"
               className=" rounded-full"
             />
           </View>

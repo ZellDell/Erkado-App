@@ -46,15 +46,17 @@ function TraderView() {
     },
   };
 
+  useEffect(() => {
+    console.log(traderDetails);
+  }, []);
+
   isNewUser = useSelector((state) => state.ui.isNewUser);
   userInfo = useSelector((state) => state.user.userInfo);
   const isPreparing = useSelector((state) => state.ui.isPreparing);
   const { crops } = useSelector((state) => state.crop.crops);
-
+  const { quality } = useSelector((state) => state.crop.quality);
   const deviceWidth = Dimensions.get("window").width;
-  useEffect(() => {
-    console.log(route.params?.TraderDetails);
-  }, []);
+
   return (
     <SafeAreaView className="bg-gray-50 flex-1 pb-16">
       <>
@@ -72,7 +74,11 @@ function TraderView() {
               <Icon name="arrow-back" size={30} color={COLORS.primary} />
             </TouchableOpacity>
             <Image
-              source={Traderplaceholder}
+              source={
+                traderDetails.ProfileImg
+                  ? { uri: traderDetails.ProfileImg }
+                  : Traderplaceholder
+              }
               style={{ height: deviceWidth, width: deviceWidth }}
             />
           </View>
@@ -123,19 +129,31 @@ function TraderView() {
 
             <View className="space-y-3 border-b-2 border-gray-200 pb-5 mb-5">
               <Text className="text-gray-800 font-bold text-2xl mt-2">
-                Crops to Purchase
+                Hey, I'm Looking for
               </Text>
 
-              <View style={{ maxHeight: 250 }}>
+              <View style={{ maxHeight: deviceWidth * 0.7 }}>
                 <ScrollView className="pr-4" nestedScrollEnabled={true}>
                   {traderDetails.purchasingDetails.map((traderCrop) => {
                     const associatedCrop = crops.find(
                       (crop) => crop.CropID === traderCrop.CropID
                     );
+
+                    const qualityType = quality.find(
+                      (quali) => quali.QualityTypeID == traderCrop.QualityTypeID
+                    );
                     if (!associatedCrop) return null;
                     return (
                       <View
-                        key={associatedCrop.CropID}
+                        key={
+                          associatedCrop.CropID +
+                          "-" +
+                          traderCrop.QualityTypeID +
+                          "-" +
+                          traderCrop.CropType +
+                          "-" +
+                          traderCrop.PricePerUnit
+                        }
                         className="flex-row justify-between py-3"
                       >
                         <View className="flex-row space-x-2">
@@ -150,7 +168,7 @@ function TraderView() {
                               {associatedCrop.CropName}
                             </Text>
                             <Text className="text-gray-500 font-medium">
-                              {associatedCrop.Type} | {associatedCrop.Quality}
+                              {traderCrop.CropType} | {qualityType.QualityType}
                             </Text>
                           </View>
                         </View>
@@ -167,6 +185,27 @@ function TraderView() {
                   })}
                 </ScrollView>
               </View>
+            </View>
+            <View className="space-y-3 border-b-2 border-gray-200 pb-5">
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => {
+                  navigation.navigate("ConversationScreen", {
+                    InfoDetails: traderDetails,
+                  });
+                }}
+                className="py-2 rounded-md flex-row justify-center space-x-2 bg-orange-400"
+              >
+                <Icon
+                  type="ionicon"
+                  name="chatbubbles"
+                  size={23}
+                  color="#FFFFFF"
+                />
+                <Text className="text-lg self-center text-white font-bold">
+                  Send Message
+                </Text>
+              </TouchableOpacity>
             </View>
 
             <View className="space-y-3 border-b-2 border-gray-200 pb-5">
@@ -195,8 +234,7 @@ function TraderView() {
                     Coordinates: traderLocation.coordinates,
                   });
                 }}
-                className="py-2 rounded-md flex-row justify-center space-x-2"
-                style={{ backgroundColor: COLORS.primary }}
+                className="py-2 rounded-md flex-row justify-center space-x-2 bg-orange-400"
               >
                 <Icon type="ionicon" name="locate" size={23} color="#FFFFFF" />
                 <Text className="text-lg self-center text-white font-bold">
@@ -209,7 +247,20 @@ function TraderView() {
         <View className="p-4 absolute bottom-0 w-full " style={styles.shadow}>
           <TouchableOpacity
             activeOpacity={0.7}
-            onPress={() => {}}
+            onPress={() => {
+              if (traderDetails.purchasingDetails.length === 0) {
+                Toast.show({
+                  type: "WarningNotif",
+                  text1: "This Trader isn't looking for a crop",
+                  visibilityTime: 3000,
+                  swipeable: true,
+                });
+                return;
+              }
+              navigation.navigate("OfferTransaction", {
+                InfoDetails: traderDetails,
+              });
+            }}
             className="py-4 rounded-md"
             style={{ backgroundColor: COLORS.primary }}
           >

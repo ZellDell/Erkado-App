@@ -32,8 +32,9 @@ export const requestUserInfo = () => {
           fullname: response.data?.userInfo.Fullname,
           address: addressText,
           coordinates: coordinates,
-          userType: response.data?.UserType,
+          userType: response.data.UserType,
           profileImg: response.data?.userInfo.ProfileImg,
+          purchasingDetails: response.data?.purchasingDetails,
           extraInfo:
             response.data?.UserType != "Farmer"
               ? response.data?.userInfo?.RSBSA
@@ -48,12 +49,6 @@ export const requestUserInfo = () => {
 
         return;
       }
-      Toast.show({
-        type: "ErrorNotif",
-        text1: err?.message,
-        visibilityTime: 4000,
-        swipeable: true,
-      });
     } finally {
       dispatch(uiActions.setPreparing(false));
     }
@@ -66,13 +61,10 @@ export const setUserInfo = ({
   extraInfo,
   profileImg,
   crops,
+  isFarmer,
 }) => {
-  return async (dispatch, getState) => {
-    const state = getState();
+  return async (dispatch) => {
     const sendRequest = async () => {
-      // const userID = state.auth.userID;
-      const isFarmer = state.ui.isFarmer;
-
       const response = await client.post(`/userInfo/setInfo`, {
         fullname,
         address,
@@ -92,7 +84,7 @@ export const setUserInfo = ({
         type: "SuccessNotif",
         props: { header: "Success" },
         text1: "Your Profile has been set!",
-        visibilityTime: 5000,
+        visibilityTime: 3000,
         swipeable: true,
       });
 
@@ -120,33 +112,35 @@ export const imgUpload = (formdata) => {
 
       return fetchResult.data.image;
     } catch (err) {
-      // if (err.response?.status === 401) {
-      //   Toast.show({
-      //     type: "WarningNotif",
-      //     text1: err.response?.data?.message,
-      //     visibilityTime: 5000,
-      //     swipeable: true,
-      //   });
-
-      //   return;
-      // }
-      // if (err.response?.status == 500) {
-      //   Toast.show({
-      //     type: "ErrorNotif",
-      //     text1: err.response.data.message,
-      //     visibilityTime: 5000,
-      //     swipeable: true,
-      //   });
-
-      //   return;
-      // }
       console.log("Error ==== ", err);
-      // Toast.show({
-      //   type: "ErrorNotif",
-      //   text1: err?.response,
-      //   visibilityTime: 5000,
-      //   swipeable: true,
-      // });
+    }
+  };
+};
+
+export const updateUserInfoCrops = ({ myCrops }) => {
+  return async (dispatch) => {
+    const sendRequest = async () => {
+      const response = await client.post(`/userInfo/update`, {
+        myCrops,
+      });
+
+      return response;
+    };
+
+    try {
+      const response = await sendRequest();
+      await dispatch(requestUserInfo());
+      Toast.show({
+        type: "SuccessNotif",
+        props: { header: "Success" },
+        text1: "Your Crop has been updated!",
+        visibilityTime: 3000,
+        swipeable: true,
+      });
+
+      return { success: true };
+    } catch (err) {
+      console.log(err.message);
     }
   };
 };

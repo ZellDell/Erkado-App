@@ -33,6 +33,7 @@ import { useSelector } from "react-redux";
 function AddCropBottomSheet(props) {
   const snapPoints = useMemo(() => ["60%"], []);
   const { crops } = useSelector((state) => state.crop.crops);
+
   isFarmer = useSelector((state) => state.ui.isFarmer);
 
   return (

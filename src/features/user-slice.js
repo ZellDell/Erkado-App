@@ -12,6 +12,7 @@ const userSlice = createSlice({
       userType: null,
       profileImg: null,
       extraInfo: null,
+      purchasingDetails: null,
     },
   },
   reducers: {

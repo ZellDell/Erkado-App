@@ -5,16 +5,21 @@ const cropSlice = createSlice({
   initialState: {
     crops: {
       CropID: null,
-      Quality: null,
-      Type: null,
       CropName: null,
       Description: null,
       Uri: null,
+    },
+    quality: {
+      QualityTypeID: null,
+      QualityType: null,
     },
   },
   reducers: {
     setCrops(state, action) {
       state.crops = action.payload;
+    },
+    setQuality(state, action) {
+      state.quality = action.payload;
     },
   },
 });

@@ -26,7 +26,7 @@ function SearchScreen() {
   const [query, setQuery] = useState("");
   const { crops } = useSelector((state) => state.crop.crops);
 
-  const queryTrader = useQueryTrader("");
+  const queryTrader = useQueryTrader("", "trader");
   const navigation = useNavigation();
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -45,11 +45,11 @@ function SearchScreen() {
             />
             <TextInput
               className="flex-1 font-semibold text-lg text-gray-700"
-              placeholder="e.g. Crop, Trader Name.."
+              placeholder="e.g. Trader Name, Trader type..."
               value={queryTrader.value}
               onChangeText={(text) => queryTrader.onChangeText(text)}
             />
-            {query.length > 0 && (
+            {queryTrader.value.length > 0 && (
               <TouchableOpacity onPress={() => queryTrader.onChangeText("")}>
                 <Icon
                   name="close-circle"
@@ -127,9 +127,18 @@ function SearchScreen() {
                 >
                   {crops.map((crop) => (
                     <TouchableHighlight
+                      activeOpacity={1}
                       key={crop.CropID}
+                      underlayColor="#ededed"
                       className="flex-row bg-white items-center rounded-full px-3 border-2 border-gray-300 mt-2"
-                      onPress={() => {}}
+                      onPress={() => {
+                        navigation.navigate("CropSearchTrader", {
+                          cropID: crop.CropID,
+                          cropQuery: crop.CropName,
+                          cropUri: crop.Uri,
+                          cropDescription: crop.Description,
+                        });
+                      }}
                     >
                       <>
                         <Image
@@ -152,6 +161,9 @@ function SearchScreen() {
                   activeOpacity={0.7}
                   className="flex-row justify-center mt-4 py-3 rounded-3xl space-x-2 items-center"
                   style={{ backgroundColor: COLORS.primary }}
+                  onPress={() => {
+                    navigation.navigate("ProximitySearch");
+                  }}
                 >
                   <Icon name="map" type="ionicon" color="#FFFFFF" size={20} />
                   <Text className="text-white font-semibold text-md">

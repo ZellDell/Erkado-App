@@ -8,9 +8,10 @@ const getRoute = ({ startingCoords, endingCoords }) => {
 
   const [routeDirections, setRouteDirections] = useState(null);
   const [distance, setDistance] = useState(null);
-  const [offSet, setOffSet] = useState(null);
-  const [HorioffSet, setHoriOffSet] = useState(null);
+
   const [zoomLvl, setZoomLvl] = useState(null);
+
+  const [coordinates, setCoordinates] = useState([]);
 
   function makeRouterFeature(coordinates) {
     let routerFeature = {
@@ -31,28 +32,15 @@ const getRoute = ({ startingCoords, endingCoords }) => {
 
   const handleDistance = (distance) => {
     if (distance < 0.5) {
-      setOffSet(0.0001);
       setZoomLvl(18);
     } else if (distance < 1) {
-      setOffSet(0.0001);
-      setZoomLvl(17);
-    } else if (distance < 2) {
-      setOffSet(0.0004);
       setZoomLvl(16);
-    } else if (distance < 3) {
-      setOffSet(0.0008);
+    } else if (distance < 2) {
       setZoomLvl(15.5);
     } else if (distance < 4) {
-      setOffSet(0.01);
-      setZoomLvl(13.4);
-      setHoriOffSet(-0.005);
-    } else if (distance < 5) {
-      setOffSet(0.015);
       setZoomLvl(13.5);
-      setHoriOffSet(-0.003);
     } else {
-      setOffSet(0.018);
-      setZoomLvl(12);
+      setZoomLvl(13);
     }
   };
 
@@ -88,14 +76,37 @@ const getRoute = ({ startingCoords, endingCoords }) => {
     }
   };
 
+  const calculateMidpoint = () => {
+    let lon1 = startingCoords[0];
+    let lat1 = startingCoords[1];
+
+    let lon2 = endingCoords[0];
+    let lat2 = endingCoords[1];
+
+    let avgLat = (lat1 + lat2) / 2;
+    let avgLon;
+
+    if (Math.abs(lon1 - lon2) > 180) {
+      if (lon1 > 0) {
+        lon1 -= 360;
+      } else {
+        lon2 -= 360;
+      }
+    }
+    avgLon = (lon1 + lon2) / 2;
+
+    setCoordinates([avgLat, avgLon]);
+  };
+
   useEffect(() => {
     queryRoute();
+    calculateMidpoint();
   }, []);
   return {
     routeDirections,
     distance,
-    offSet,
-    HorioffSet,
+    coordinates,
+    calculateMidpoint,
     zoomLvl,
     queryRoute,
   };

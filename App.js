@@ -26,6 +26,14 @@ import Mapbox from "@rnmapbox/maps";
 import { requestCrops } from "./src/features/crop-actions";
 import TraderView from "./src/screens/SearchStack/TraderView";
 import TraderRoute from "./src/screens/SearchStack/TraderRoute";
+import CropSearchTrader from "./src/screens/SearchStack/CropSearchTrader";
+import ProximitySearch from "./src/screens/SearchStack/ProximitySearch";
+import ConversationScreen from "./src/screens/MessageStack/ConversationScreen";
+import EditCropsInProfile from "./src/screens/HomeStack/EditCropsInProfile";
+import TraderProfile from "./src/screens/HomeStack/TraderProfile";
+import OfferTransaction from "./src/screens/TransactionStack/OfferTransaction";
+import TransactionListScreen from "./src/screens/TransactionStack/TransactionListScreen";
+import FullViewTransaction from "./src/screens/TransactionStack/FullViewTransaction";
 
 Mapbox.setAccessToken(
   "pk.eyJ1IjoiemVsbGRlbGwiLCJhIjoiY2x0d3hjdG91MDBheTJqczdqcHRjdWhpZSJ9.UyWdrUlPhJlQN-XE_JoP6Q"
@@ -68,7 +76,7 @@ const AuthStack = () => {
           />
           <Stack.Screen
             name="Credentials"
-            options={{ headerShown: false, animation: "slide_from_right" }}
+            options={{ headerShown: false, presentation: "modal" }}
             component={CredentialsScreen}
           />
         </>
@@ -115,6 +123,45 @@ const MainStack = () => {
         <Stack.Screen
           name="TraderRoute"
           component={TraderRoute}
+          options={{ headerShown: false, animation: "slide_from_right" }}
+        />
+        <Stack.Screen
+          name="EditCropsInProfile"
+          component={EditCropsInProfile}
+          options={{ headerShown: false, animation: "slide_from_right" }}
+        />
+
+        <Stack.Screen
+          name="CropSearchTrader"
+          component={CropSearchTrader}
+          options={{ headerShown: false, animation: "slide_from_right" }}
+        />
+        <Stack.Screen
+          name="ProximitySearch"
+          component={ProximitySearch}
+          options={{ headerShown: false, animation: "slide_from_right" }}
+        />
+        <Stack.Screen
+          name="ConversationScreen"
+          component={ConversationScreen}
+          options={{ headerShown: false, animation: "slide_from_right" }}
+        />
+
+        <Stack.Screen
+          name="OfferTransaction"
+          component={OfferTransaction}
+          options={{ headerShown: false, animation: "slide_from_bottom" }}
+        />
+
+        <Stack.Screen
+          name="FullViewTransaction"
+          component={FullViewTransaction}
+          options={{ headerShown: false, animation: "slide_from_bottom" }}
+        />
+
+        <Stack.Screen
+          name="TransactionListScreen"
+          component={TransactionListScreen}
           options={{ headerShown: false, animation: "slide_from_right" }}
         />
 

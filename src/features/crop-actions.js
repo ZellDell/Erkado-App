@@ -14,18 +14,20 @@ export const requestCrops = () => {
 
     try {
       const { data } = await sendRequest();
+
       const crops = data.Crops.map((crop) => ({
         CropID: crop.CropID,
-        Quality: crop.QualityType.QualityType,
-        Type: crop.Type.Type,
         CropName: crop.CropName,
         Description: crop.Description,
         Uri: crop.Image,
       }));
-
-      console.log("Crops : ", crops);
+      const quality = data.Quality.map((crop) => ({
+        QualityType: crop.QualityType,
+        QualityTypeID: crop.QualityTypeID,
+      }));
+      console.log(crops, quality);
       dispatch(cropActions.setCrops({ crops }));
-      //   dispatch(uiActions.setAsNewUser(false));
+      dispatch(cropActions.setQuality({ quality }));
     } catch (err) {
       console.log(err);
     }

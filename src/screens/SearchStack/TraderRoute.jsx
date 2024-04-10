@@ -75,19 +75,17 @@ function TraderRoute() {
 
         camera.current?.setCamera({
           centerCoordinate: [
-            traderRouteDetails.Coordinates.longitude -
-              (useGetRoute.HorioffSet ? useGetRoute.HorioffSet : 0.0),
-            traderRouteDetails.Coordinates.latitude -
-              (useGetRoute.offSet ? useGetRoute.offSet : 0.0),
+            useGetRoute.coordinates[1],
+            useGetRoute.coordinates[0],
           ],
-          zoomLevel: useGetRoute.zoomLvl ? useGetRoute.zoomLvl : 12,
+          zoomLevel: useGetRoute.zoomLvl ? useGetRoute.zoomLvl : 13,
           animationMode: "flyTo",
           animationDuration: 3000,
           heading: 0,
         });
       },
 
-      5000
+      4000
     );
   };
 
@@ -134,17 +132,10 @@ function TraderRoute() {
             >
               <Mapbox.Camera
                 ref={camera}
-                zoomLevel={useGetRoute.zoomLvl ? useGetRoute.zoomLvl : 12}
+                zoomLevel={useGetRoute.zoomLvl ? useGetRoute.zoomLvl : 13}
                 centerCoordinate={
-                  userInfo.coordinates
-                    ? [
-                        traderRouteDetails.Coordinates.longitude -
-                          (useGetRoute.HorioffSet
-                            ? useGetRoute.HorioffSet
-                            : 0.0),
-                        traderRouteDetails.Coordinates.latitude -
-                          (useGetRoute.offSet ? useGetRoute.offSet : 0),
-                      ]
+                  useGetRoute.coordinates
+                    ? [useGetRoute.coordinates[1], useGetRoute.coordinates[0]]
                     : [125.80936, 7.44721]
                 }
               />

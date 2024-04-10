@@ -17,8 +17,63 @@ import {
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Icon } from "@rneui/base";
 import COLORS from "../../constant/colors";
+import Traderplaceholder from "../../../assets/profile/Default Trader.png";
+import Farmerplaceholder from "../../../assets/profile/Default Farmer.png";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchMessages } from "../../features/message-actions";
+import getTimeAgoUtil from "../../utils/getTimeAgoUtil";
+
+import {
+  useNavigation,
+  useRoute,
+  useFocusEffect,
+} from "@react-navigation/native";
+import { fetchTransaction } from "../../features/transaction-actions";
+
 function TransactionScreen() {
   const [query, setQuery] = useState("");
+  const [selectedTabIndex, setSelectedTabIndex] = useState(0);
+
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+
+  const [transactions, setTransactions] = useState([]);
+
+  const UserType = useSelector((state) => state.user.userInfo.userType);
+
+  useEffect(() => {
+    getTransaction();
+
+    return () => {
+      setTransactions([]);
+    };
+  }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getTransaction();
+    }, [])
+  );
+
+  const getTransaction = async () => {
+    try {
+      const transaction = await dispatch(fetchTransaction({ UserType }));
+
+      setTransactions(transaction?.data.transactions);
+    } catch (error) {
+      console.error("Error fetching conversations:", error);
+    }
+  };
+
+  const handleTabPress = (index) => {
+    setSelectedTabIndex(index);
+  };
+
+  const isTabSelected = (index) => {
+    return index === selectedTabIndex;
+  };
+
+  const useGetTimeAgo = getTimeAgoUtil();
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -53,33 +108,67 @@ function TransactionScreen() {
             )}
           </View>
 
-          <View className="flex-row w-full">
-            <TouchableHighlight
-              activeOpacity={1}
-              underlayColor="#27C10E"
-              onPress={() => {}}
-              className="w-1/2 p-2 rounded-l-xl items-center justify-center"
-              style={{ backgroundColor: COLORS.primary }}
-            >
-              <Text className="text-white font-medium text-sm">Ongoing</Text>
-            </TouchableHighlight>
-            <TouchableHighlight
-              className="w-1/2 p-2 rounded-r-xl items-center justify-center bg-gray-300"
-              activeOpacity={1}
-              underlayColor="#dedede"
-              onPress={() => {}}
-            >
-              <Text className="text-gray-800 font-medium text-sm">
-                Complete
-              </Text>
-            </TouchableHighlight>
-          </View>
-
           <View>
-            <View className="flex-row justify-center mt-4">
-              <Text className="text-gray-600 font-[450]">
-                You don't have any transactions!
-              </Text>
+            <View className="flex-1 justify-center mt-4">
+              {transactions ? (
+                transactions.map((transaction, index) => {
+                  console.log("==", transaction);
+                  return (
+                    <TouchableHighlight
+                      key={index}
+                      activeOpacity={1}
+                      underlayColor="#ededed"
+                      onPress={() => {
+                        navigation.navigate("TransactionListScreen", {
+                          transactions: transaction.transactions,
+                          userInfo: transaction.userInfo,
+                        });
+                      }}
+                    >
+                      <View className="flex-row border-b-2 border-gray-200 py-4 items-center justify-between">
+                        <View className="flex-row space-x-3">
+                          <Image
+                            source={
+                              transaction.userInfo.ProfileImg
+                                ? { uri: transaction.userInfo.ProfileImg }
+                                : Traderplaceholder
+                            }
+                            style={{ width: 55, height: 55 }}
+                            resizeMode="cover"
+                            className=" rounded-full"
+                          />
+                          <View className="items-start">
+                            <Text className="text-2xl font-bold text-gray-800">
+                              {transaction.userInfo.Fullname.length > 24
+                                ? transaction.userInfo.Fullname.slice(0, 24) +
+                                  "..."
+                                : transaction.userInfo.Fullname}
+                            </Text>
+                            <View className="flex-row space-x-1">
+                              <Text className=" text-sm font-semibold text-gray-700">
+                                Transactions :
+                              </Text>
+                              <Text className=" text-sm font-bold text-lime-600">
+                                {transaction.transactions.length}
+                              </Text>
+                            </View>
+                          </View>
+                        </View>
+
+                        <View className="p-3 bg-lime-500 rounded-lg">
+                          <Text className="text-sm text-white font-semibold ">
+                            See All
+                          </Text>
+                        </View>
+                      </View>
+                    </TouchableHighlight>
+                  );
+                })
+              ) : (
+                <Text className="self-center text-gray-400 font-semibold mt-5">
+                  You dont have any Conversations...
+                </Text>
+              )}
             </View>
           </View>
         </SafeAreaView>
