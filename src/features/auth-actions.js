@@ -98,7 +98,7 @@ export const Logout = () => {
       await SecureStore.deleteItemAsync(TOKEN_KEY);
 
       dispatch(uiActions.setPreparing(false));
-
+      dispatch(uiActions.setAsNewUser(true));
       dispatch(uiActions.setFarmer(true));
 
       dispatch(

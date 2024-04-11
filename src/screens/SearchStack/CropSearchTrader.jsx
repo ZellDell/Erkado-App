@@ -62,9 +62,7 @@ function CropSearchTrader() {
             </View>
 
             <Text className="text-lg leading-6 text-gray-800 font-semibold text-justify">
-              Do you wish to know the traders who might want to buy your crops?
-              Here's a list we can provide to guide you on your way of crop
-              trading!
+              {route.params?.cropDescription}
             </Text>
           </View>
 

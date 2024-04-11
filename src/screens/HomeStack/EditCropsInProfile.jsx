@@ -230,8 +230,16 @@ function EditCropsInProfile() {
         myCrops,
       })
     );
-    if (response?.success) {
+    if (response.success) {
       navigation.goBack();
+    } else {
+      Toast.show({
+        type: "ErrorNotif",
+        props: { header: "Error" },
+        text1: "An error occured while updating your profile",
+        visibilityTime: 3000,
+        swipeable: true,
+      });
     }
     setIsLoading(false);
   };

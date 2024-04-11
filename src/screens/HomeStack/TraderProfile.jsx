@@ -41,9 +41,11 @@ function TraderProfile() {
   const { quality } = useSelector((state) => state.crop.quality);
 
   isNewUser = useSelector((state) => state.ui.isNewUser);
-  userInfo = useSelector((state) => state.user.userInfo);
+  UserInfo = useSelector((state) => state.user.userInfo);
   const isPreparing = useSelector((state) => state.ui.isPreparing);
   const { crops } = useSelector((state) => state.crop.crops);
+
+  const [userInfo, setUserInfo] = useState(UserInfo);
 
   useEffect(() => {
     const requestuserinfo = async () => {
@@ -68,6 +70,7 @@ function TraderProfile() {
     React.useCallback(() => {
       dispatch(requestUserInfo());
       console.log("Requesting Again..");
+      setUserInfo(UserInfo);
     }, [])
   );
 

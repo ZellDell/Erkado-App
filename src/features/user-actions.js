@@ -15,7 +15,7 @@ export const requestUserInfo = () => {
     await dispatch(uiActions.setPreparing(true));
     try {
       const response = await sendRequest();
-      console.log("Response : ", response.data);
+      console.log("Response === : ", response.data);
 
       await dispatch(uiActions.setAsNewUser(false));
 
