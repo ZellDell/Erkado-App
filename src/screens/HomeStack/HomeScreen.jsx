@@ -232,7 +232,7 @@ function HomeScreen() {
       showsVerticalScrollIndicator={false}
       nestedScrollEnabled={true}
     >
-      <SafeAreaView className="bg-gray-50 pt-5 flex-1">
+      <SafeAreaView className="b-gray-50 pt-5 flex-1">
         {isNotification && (
           <View className="flex-row bg-green-500 justify-center items-center">
             <Icon

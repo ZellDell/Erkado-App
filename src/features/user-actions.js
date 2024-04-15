@@ -24,9 +24,9 @@ export const requestUserInfo = () => {
       await dispatch(
         userActions.setUserInfo({
           userInfoId:
-            response.data?.UserType != "Farmer"
-              ? response.data?.FarmerId
-              : response.data?.TraderId,
+            response.data?.UserType == "Farmer"
+              ? response.data?.FarmerID
+              : response.data?.TraderID,
           userId: response.data?.userInfo.UserID,
           fullname: response.data?.userInfo.Fullname,
           address: addressText,
@@ -35,7 +35,7 @@ export const requestUserInfo = () => {
           profileImg: response.data?.userInfo.ProfileImg,
           purchasingDetails: response.data?.purchasingDetails,
           extraInfo:
-            response.data?.UserType != "Farmer"
+            response.data?.UserType == "Farmer"
               ? response.data?.userInfo?.RSBSA
               : response.data?.userInfo?.TraderType,
         })
@@ -140,6 +140,35 @@ export const updateUserInfoCrops = ({ myCrops }) => {
       return { success: true };
     } catch (err) {
       console.log(err.message);
+    }
+  };
+};
+
+export const updateUserInfo = ({ editedUserInfo }) => {
+  return async (dispatch) => {
+    console.log("1231290350-9", editedUserInfo);
+    const sendRequest = async () => {
+      const response = await client.post(`/userInfo/updateInfo`, {
+        editedUserInfo,
+      });
+
+      return response;
+    };
+
+    try {
+      const response = await sendRequest();
+      await dispatch(requestUserInfo());
+      Toast.show({
+        type: "SuccessNotif",
+        props: { header: "Success" },
+        text1: "Your Account details has been updated!",
+        visibilityTime: 3000,
+        swipeable: true,
+      });
+
+      return { success: true };
+    } catch (err) {
+      return { error: true, err: err };
     }
   };
 };

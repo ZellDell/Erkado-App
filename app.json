@@ -19,7 +19,7 @@
     "android": {
       "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"],
       "adaptiveIcon": {
-        "foregroundImage": "./assets/Erkado-logo.png",
+        "foregroundImage": "./assets/ErkadoIcon.png",
         "backgroundColor": "#ffffff"
       },
 

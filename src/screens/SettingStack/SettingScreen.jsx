@@ -70,37 +70,6 @@ function SettingScreen() {
               />
             </View>
           </TouchableHighlight>
-
-          <TouchableHighlight
-            activeOpacity={1}
-            underlayColor="#ededed"
-            onPress={() => {}}
-          >
-            <View className="flex-row border-b-2 border-gray-200 py-3 items-center justify-between">
-              <Text className="text-base font-[450] text-gray-800">Help</Text>
-              <Icon
-                name="caret-forward"
-                type="ionicon"
-                color="#000"
-                size={30}
-              />
-            </View>
-          </TouchableHighlight>
-          <TouchableHighlight
-            activeOpacity={1}
-            underlayColor="#ededed"
-            onPress={() => {}}
-          >
-            <View className="flex-row border-b-2 border-gray-200 py-3 items-center justify-between">
-              <Text className="text-base font-[450] text-gray-800">About</Text>
-              <Icon
-                name="caret-forward"
-                type="ionicon"
-                color="#000"
-                size={30}
-              />
-            </View>
-          </TouchableHighlight>
         </View>
 
         <TouchableHighlight
