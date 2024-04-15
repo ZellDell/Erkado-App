@@ -1,26 +1,16 @@
 import {
   View,
   Text,
-  SafeAreaView,
-  Image,
-  StatusBar,
-  Platform,
-  StyleSheet,
-  TextInput,
-  ScrollView,
-  Button,
   TouchableOpacity,
   KeyboardAvoidingView,
-  Keyboard,
   ActivityIndicator,
 } from "react-native";
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React from "react";
 import COLORS from "../../constant/colors";
-import ProgressBar from "react-native-animated-progress";
-import placeholder from "../../../assets/profile/Default Farmer.png";
+
 import { Icon } from "@rneui/base";
 import TextInputField from "../../components/General/TextInputField";
-import ImageModal from "./ImageModal";
+
 import Mapbox from "@rnmapbox/maps";
 import usePlacesAutocomplete from "../../utils/usePlacesAutoComplete";
 

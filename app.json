@@ -1,14 +1,14 @@
 {
   "expo": {
-    "name": "Erkado-App",
+    "name": "Erkado",
     "slug": "Erkado-App",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/ErkadoIcon.png",
     "userInterfaceStyle": "light",
 
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/SplashScreen.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,14 +17,16 @@
       "supportsTablet": true
     },
     "android": {
+      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"],
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/Erkado-logo.png",
         "backgroundColor": "#ffffff"
       },
+
       "package": "com.wdellh.ErkadoApp"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/Erkado-logo.png"
     },
     "plugins": [
       [
@@ -33,6 +35,14 @@
           "RNMapboxMapsImpl": "mapbox",
           "RNMapboxMapsDownloadToken": "sk.eyJ1IjoiemVsbGRlbGwiLCJhIjoiY2x0d3hkZWEzMDA5NjJqcW0yb2dvMDJreiJ9.1Pv64yqgJz91imPWK62q0w",
           "RNMapboxMapsVersion": "11.0.0"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
         }
       ]
     ],

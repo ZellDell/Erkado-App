@@ -14,72 +14,40 @@ import {
   Keyboard,
   TouchableHighlight,
 } from "react-native";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React from "react";
 import { Icon } from "@rneui/base";
 import COLORS from "../../constant/colors";
-import Traderplaceholder from "../../../assets/profile/Default Trader.png";
-import Farmerplaceholder from "../../../assets/profile/Default Farmer.png";
+
 import { useDispatch, useSelector } from "react-redux";
-import { fetchMessages } from "../../features/message-actions";
-import getTimeAgoUtil from "../../utils/getTimeAgoUtil";
 
 import {
   useNavigation,
   useRoute,
   useFocusEffect,
 } from "@react-navigation/native";
-import { fetchTransaction } from "../../features/transaction-actions";
+
+import useQueryTransaction from "../../utils/queryTransactions";
+import PLACEHOLDER from "../../constant/profile";
 
 function TransactionScreen() {
-  const [query, setQuery] = useState("");
-  const [selectedTabIndex, setSelectedTabIndex] = useState(0);
-
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
-  const [transactions, setTransactions] = useState([]);
-
   const UserType = useSelector((state) => state.user.userInfo.userType);
 
-  useEffect(() => {
-    getTransaction();
-
-    return () => {
-      setTransactions([]);
-    };
-  }, []);
+  const queryTransaction = useQueryTransaction("", UserType);
 
   useFocusEffect(
     React.useCallback(() => {
-      getTransaction();
+      queryTransaction.onChangeText("");
     }, [])
   );
-
-  const getTransaction = async () => {
-    try {
-      const transaction = await dispatch(fetchTransaction({ UserType }));
-
-      setTransactions(transaction?.data.transactions);
-    } catch (error) {
-      console.error("Error fetching conversations:", error);
-    }
-  };
-
-  const handleTabPress = (index) => {
-    setSelectedTabIndex(index);
-  };
-
-  const isTabSelected = (index) => {
-    return index === selectedTabIndex;
-  };
-
-  const useGetTimeAgo = getTimeAgoUtil();
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <ScrollView className="flex-1">
         <SafeAreaView className="bg-gray-100 pt-5 flex-1 mt-12 px-8 space-y-4">
-          <Text className="font-bold text-2xl text-gray-700">
+          <Text className="font-bold text-xl text-gray-700">
             Transactions (0)
           </Text>
 
@@ -91,13 +59,15 @@ function TransactionScreen() {
               size={30}
             />
             <TextInput
-              className="flex-1 font-semibold text-lg text-gray-700"
-              placeholder="e.g. Transaction ID, Trader Name.."
-              value={query}
-              onChangeText={(text) => setQuery(text)}
+              className="flex-1 font-semibold text-base text-gray-700"
+              placeholder="e.g. Trader Name.."
+              value={queryTransaction.value}
+              onChangeText={(text) => queryTransaction.onChangeText(text)}
             />
-            {query.length > 0 && (
-              <TouchableOpacity onPress={() => setQuery("")}>
+            {queryTransaction.value.length > 0 && (
+              <TouchableOpacity
+                onPress={() => queryTransaction.onChangeText("")}
+              >
                 <Icon
                   name="close-circle"
                   type="ionicon"
@@ -110,10 +80,19 @@ function TransactionScreen() {
 
           <View>
             <View className="flex-1 justify-center mt-4">
-              {transactions ? (
-                transactions.map((transaction, index) => {
+              {queryTransaction?.results?.length > 0 ? (
+                queryTransaction.results.map((transaction, index) => {
                   console.log("==", transaction);
-                  return (
+
+                  const AdminRequestNotif =
+                    UserType == "Farmer"
+                      ? transaction.transactions[0].viewaccess[0]
+                          .FarmerNotification === 1
+                      : transaction.transactions[0].viewaccess[0]
+                          .TraderNotification === 1;
+                  isNotif = AdminRequestNotif;
+
+                  return transaction.userInfo ? (
                     <TouchableHighlight
                       key={index}
                       activeOpacity={1}
@@ -126,30 +105,35 @@ function TransactionScreen() {
                       }}
                     >
                       <View className="flex-row border-b-2 border-gray-200 py-4 items-center justify-between">
-                        <View className="flex-row space-x-3">
+                        <View className="flex-row space-x-3 relative">
+                          {isNotif && (
+                            <Text className="absolute -top-2 -left-1 font-bold bg-red-500 py-.5 px-2 z-10 text-white rounded-full">
+                              !
+                            </Text>
+                          )}
                           <Image
                             source={
-                              transaction.userInfo.ProfileImg
+                              transaction.userInfo?.ProfileImg
                                 ? { uri: transaction.userInfo.ProfileImg }
-                                : Traderplaceholder
+                                : { uri: PLACEHOLDER.trader }
                             }
-                            style={{ width: 55, height: 55 }}
+                            style={{ width: 45, height: 45 }}
                             resizeMode="cover"
                             className=" rounded-full"
                           />
                           <View className="items-start">
-                            <Text className="text-2xl font-bold text-gray-800">
-                              {transaction.userInfo.Fullname.length > 24
-                                ? transaction.userInfo.Fullname.slice(0, 24) +
+                            <Text className="text-lg font-bold text-gray-800">
+                              {transaction.userInfo?.Fullname.length > 24
+                                ? transaction.userInfo?.Fullname.slice(0, 24) +
                                   "..."
-                                : transaction.userInfo.Fullname}
+                                : transaction.userInfo?.Fullname}
                             </Text>
                             <View className="flex-row space-x-1">
-                              <Text className=" text-sm font-semibold text-gray-700">
+                              <Text className=" text-xs font-semibold text-gray-700">
                                 Transactions :
                               </Text>
-                              <Text className=" text-sm font-bold text-lime-600">
-                                {transaction.transactions.length}
+                              <Text className=" text-xs font-bold text-lime-600">
+                                {transaction?.transactions.length}
                               </Text>
                             </View>
                           </View>
@@ -162,7 +146,7 @@ function TransactionScreen() {
                         </View>
                       </View>
                     </TouchableHighlight>
-                  );
+                  ) : null;
                 })
               ) : (
                 <Text className="self-center text-gray-400 font-semibold mt-5">

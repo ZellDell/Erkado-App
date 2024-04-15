@@ -1,27 +1,20 @@
 import {
   View,
   Text,
-  SafeAreaView,
   Image,
-  StatusBar,
-  Platform,
-  StyleSheet,
-  TextInput,
-  ScrollView,
-  Button,
   TouchableOpacity,
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Modal from "react-native-modal";
-import { Icon } from "@rneui/base";
+
 import TextInputField from "../General/TextInputField";
 import COLORS from "../../constant/colors";
-import { Dropdown } from "react-native-element-dropdown";
+
 import { useSelector } from "react-redux";
 
-import placeholder from "../../../assets/profile/Default Farmer.png";
+import PLACEHOLDER from "../../constant/profile";
 
 function SetQuantityModal({
   quantityModal,
@@ -80,7 +73,7 @@ function SetQuantityModal({
               source={
                 selectedCropQuantity.selectedCrop.Uri
                   ? { uri: selectedCropQuantity.selectedCrop.Uri }
-                  : placeholder
+                  : { uri: PLACEHOLDER.farmer }
               }
               style={{ height: 70, width: 70 }}
               className="self-center"

@@ -1,23 +1,14 @@
 import {
   View,
   Text,
-  SafeAreaView,
-  Image,
-  StatusBar,
-  Platform,
-  StyleSheet,
-  TextInput,
-  ScrollView,
-  Button,
   TouchableOpacity,
-  KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
   ActivityIndicator,
   BackHandler,
-  Animated,
+  Dimensions,
 } from "react-native";
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import COLORS from "../../constant/colors";
 import SetupProfileImage from "../../components/ProfileComponents/SetupProfileImage";
 import * as ImagePicker from "expo-image-picker";
@@ -408,20 +399,21 @@ function EditProfileScreen() {
     };
   }, []);
 
+  const deviceHeight = Dimensions.get("window").height;
+  const deviceWidth = Dimensions.get("window").width;
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View className="bg-gray-100 pt-5 flex-1 py-5 px-3 items-center">
         <View className="flex-2 mt-5">
           <Text
-            className="text-3xl p-4 font-bold"
+            className="text-2xl font-bold"
             style={{ color: COLORS.primary }}
           >
             Edit Profile
           </Text>
         </View>
-        <View className="flex-2 w-3/5"></View>
         {/* STEPS */}
-        <View className="flex-1 w-11/12  mt-10">
+        <View className="flex-1 mt-10" style={{ width: deviceWidth * 0.9 }}>
           {page === 1 && (
             <SetupProfileImage
               handleChangeFullname={(text) => handleChange("fullname", text)}
@@ -468,14 +460,17 @@ function EditProfileScreen() {
         {/* Preve - Next - Submit */}
 
         {!isKeyboardVisible && (
-          <View className="flex-2 flex-row space-x-4 w-11/12">
+          <View
+            className="flex-2 flex-row space-x-4 "
+            style={{ width: deviceWidth * 0.9 }}
+          >
             {page > 1 && (
               <TouchableOpacity
-                className="flex-1 py-4 rounded-xl  bg-gray-400"
+                className="flex-1 py-3 rounded-lg  bg-gray-400"
                 onPress={handlePrev}
                 disabled={isLoading}
               >
-                <Text className="font-bold text-white text-xl text-center">
+                <Text className="font-bold text-white text-base text-center">
                   Back
                 </Text>
               </TouchableOpacity>
@@ -483,12 +478,12 @@ function EditProfileScreen() {
 
             {page < totalNumberOfPages && (
               <TouchableOpacity
-                className="py-4 rounded-xl flex-1"
+                className="py-3 rounded-lg flex-1"
                 style={{ backgroundColor: COLORS.primary }}
                 activeOpacity={0.6}
                 onPress={handleNext}
               >
-                <Text className="text-white text-center font-bold text-xl">
+                <Text className="text-white text-center font-bold text-base">
                   Next
                 </Text>
               </TouchableOpacity>
@@ -496,7 +491,7 @@ function EditProfileScreen() {
 
             {page === totalNumberOfPages && (
               <TouchableOpacity
-                className="flex-1 py-4 rounded-xl "
+                className="flex-1 py-3 rounded-lg "
                 style={{ backgroundColor: COLORS.primary }}
                 onPress={handleSetProfile}
                 disabled={isLoading}
@@ -508,7 +503,7 @@ function EditProfileScreen() {
                     className="self-center"
                   />
                 ) : (
-                  <Text className="font-bold text-white text-xl text-center">
+                  <Text className="font-bold text-white text-base text-center">
                     Submit
                   </Text>
                 )}

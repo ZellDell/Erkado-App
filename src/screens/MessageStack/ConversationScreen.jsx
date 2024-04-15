@@ -3,34 +3,25 @@ import {
   Text,
   SafeAreaView,
   Image,
-  StatusBar,
-  Platform,
   StyleSheet,
   TextInput,
-  ScrollView,
-  Button,
   TouchableOpacity,
   TouchableWithoutFeedback,
   Keyboard,
-  TouchableHighlight,
   Dimensions,
   FlatList,
 } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Icon } from "@rneui/base";
-import COLORS from "../../constant/colors";
-import Traderplaceholder from "../../../assets/profile/Default Trader.png";
-import Farmerplaceholder from "../../../assets/profile/Default Farmer.png";
+
 import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchMessages,
-  fetchMessagesWithTrader,
-} from "../../features/message-actions";
+
 import getTimeAgoUtil from "../../utils/getTimeAgoUtil";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import socket from "../../api/socket";
 import SenderChatBubble from "../../components/MessageComponent/SenderChatBubble";
 import ReceiverChatBubble from "../../components/MessageComponent/ReceiverChatBubble";
+import PLACEHOLDER from "../../constant/profile";
 
 function ConversationScreen() {
   const dispatch = useDispatch();
@@ -99,15 +90,15 @@ function ConversationScreen() {
               InfoDetails?.ProfileImg
                 ? { uri: InfoDetails?.ProfileImg }
                 : userType == "Farmer"
-                ? Traderplaceholder
-                : Farmerplaceholder
+                ? { uri: PLACEHOLDER.trader }
+                : { uri: PLACEHOLDER.farmer }
             }
             style={{ width: 35, height: 35 }}
             resizeMode="cover"
             className="m-1 rounded-full"
           />
           <View>
-            <Text className="font-bold text-xl text-gray-700 text-gray-">
+            <Text className="font-bold text-base text-gray-700 text-gray-">
               {InfoDetails.Fullname}
             </Text>
             {userType == "Farmer" && (
@@ -120,11 +111,12 @@ function ConversationScreen() {
       </View>
       {/* chat bubbles */}
       <View
-        className="flex-1 bg-zinc-100 pb-5 px-5  space-x-5 "
+        className="flex-1 bg-zinc-100  space-x-5 "
         style={[styles.shadow, { height: deviceHeight * 0.75 }]}
       >
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <FlatList
+            className="px-5"
             showsVerticalScrollIndicator={false}
             inverted
             data={messages.flat()}

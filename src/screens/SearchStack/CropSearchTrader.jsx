@@ -3,24 +3,20 @@ import {
   Text,
   SafeAreaView,
   Image,
-  StatusBar,
-  Platform,
   StyleSheet,
-  TextInput,
   ScrollView,
-  Button,
   TouchableOpacity,
   TouchableWithoutFeedback,
   Keyboard,
   TouchableHighlight,
 } from "react-native";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Icon } from "@rneui/base";
-import COLORS from "../../constant/colors";
-import { useDispatch, useSelector } from "react-redux";
+
 import useQueryTrader from "../../utils/queryTraders";
-import Traderplaceholder from "../../../assets/profile/Default Trader.png";
+
 import { useNavigation, useRoute } from "@react-navigation/native";
+import PLACEHOLDER from "../../constant/profile";
 
 function CropSearchTrader() {
   const route = useRoute();
@@ -35,7 +31,7 @@ function CropSearchTrader() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <ScrollView className="flex-1 bg-gray-50">
-        <SafeAreaView className="bg-gray-50 pt-5 flex-1 mt-8 px-8 space-y-5">
+        <SafeAreaView className="bg-gray-50 pt-5 flex-1 mt-5 px-8 space-y-3">
           <View className="flex-row">
             <TouchableOpacity
               onPress={() => {
@@ -52,16 +48,16 @@ function CropSearchTrader() {
             <View className="flex-row items-end space-x-3">
               <Image
                 source={{ uri: route.params?.cropUri }}
-                style={{ width: 60, height: 60 }}
+                style={{ width: 40, height: 40 }}
                 resizeMode="contain"
                 className="m-1"
               />
-              <Text className="text-3xl text-gray-800 font-bold">
+              <Text className="text-xl text-gray-800 font-bold">
                 {route.params?.cropQuery}
               </Text>
             </View>
 
-            <Text className="text-lg leading-6 text-gray-800 font-semibold text-justify">
+            <Text className="text-sm leading-2 text-gray-800 font-semibold text-justify">
               {route.params?.cropDescription}
             </Text>
           </View>
@@ -69,6 +65,7 @@ function CropSearchTrader() {
           {queryTrader.results?.length > 0 && queryTrader.value ? (
             <View>
               {queryTrader.results.map((result, index) => {
+                const price = result.queryCropDetails[0].PricePerUnit;
                 return (
                   <TouchableHighlight
                     key={index}
@@ -86,38 +83,48 @@ function CropSearchTrader() {
                           source={
                             result.ProfileImg
                               ? { uri: result.ProfileImg }
-                              : Traderplaceholder
+                              : { uri: PLACEHOLDER.trader }
                           }
-                          style={{ width: 55, height: 55 }}
+                          style={{ width: 45, height: 45 }}
                           resizeMode="cover"
                           className=" rounded-full"
                         />
                         <View className="items-start">
-                          <Text className="text-2xl font-bold text-gray-800">
+                          <Text className="text-lg font-bold text-gray-800">
                             {result?.Fullname.length > 24
                               ? result?.Fullname.slice(0, 24) + "..."
                               : result?.Fullname}
                           </Text>
-                          <Text className="pl-1 text-md font-medium text-gray-400">
+                          <Text className="pl-1 text-sm font-medium text-gray-400">
                             {result?.TraderType}
                           </Text>
                         </View>
                       </View>
 
-                      <Icon
-                        name="caret-forward"
-                        type="ionicon"
-                        color="#000"
-                        size={30}
-                      />
+                      <View className="flex-row space-x-2">
+                        <View className="items-center">
+                          <Text className="font-semibold text-xs text-gray-500">
+                            Per Kilo
+                          </Text>
+                          <Text className="font-extrabold text-base text-lime-600 ">
+                            ₱ {price}
+                          </Text>
+                        </View>
+                        <Icon
+                          name="chevron-forward"
+                          type="ionicon"
+                          color="#84cc16"
+                          size={30}
+                        />
+                      </View>
                     </View>
                   </TouchableHighlight>
                 );
               })}
             </View>
           ) : (
-            <Text className="text-gray-600 font-[450] text-lg">
-              No traders are looking to buy this crop
+            <Text className="text-gray-600 font-[450] text-sm pt-10 self-center">
+              No traders are looking to buy this crop.
             </Text>
           )}
         </SafeAreaView>

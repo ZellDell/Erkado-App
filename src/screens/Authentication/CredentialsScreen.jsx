@@ -2,19 +2,13 @@ import {
   View,
   Text,
   SafeAreaView,
-  Image,
-  StatusBar,
-  Platform,
-  StyleSheet,
-  TextInput,
   ScrollView,
-  Button,
   TouchableOpacity,
   TouchableWithoutFeedback,
   Keyboard,
   ActivityIndicator,
 } from "react-native";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigation, useRoute } from "@react-navigation/native";
 
 import { Icon } from "@rneui/themed";
@@ -47,6 +41,12 @@ function CredentialsScreen() {
     });
   };
 
+  const validateEmail = (email) => {
+    // Email regex pattern
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
   const register = async () => {
     if (
       !userCredentials.username ||
@@ -57,7 +57,7 @@ function CredentialsScreen() {
       await Toast.show({
         type: "WarningNotif",
         text1: "Please Fill All Fields",
-        visibilityTime: 4000,
+        visibilityTime: 3000,
         swipeable: true,
       });
       return;
@@ -67,7 +67,17 @@ function CredentialsScreen() {
       await Toast.show({
         type: "WarningNotif",
         text1: "Passwords Do Not Match",
-        visibilityTime: 4000,
+        visibilityTime: 3000,
+        swipeable: true,
+      });
+      return;
+    }
+
+    if (!validateEmail(userCredentials.email)) {
+      await Toast.show({
+        type: "WarningNotif",
+        text1: "Invalid Email",
+        visibilityTime: 3000,
         swipeable: true,
       });
       return;
@@ -105,30 +115,30 @@ function CredentialsScreen() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View
-        className="flex-1 bg-white px-10 py-12 relative"
+        className="flex-1 bg-white px-10 pt-8 relative"
         style={{ borderTopLeftRadius: 40, borderTopRightRadius: 40 }}
       >
         <TouchableOpacity
-          className=" p-1 absolute top-8 left-4"
+          className=" p-1 absolute top-5 left-4"
           onPress={() => navigation.goBack()}
         >
-          <Icon name="arrow-back" type="ionicon" color="#60BB46" size={25} />
+          <Icon name="arrow-back" type="ionicon" color="#60BB46" size={30} />
         </TouchableOpacity>
         <ScrollView showsVerticalScrollIndicator={false}>
           <SafeAreaView>
             <Text
-              className="text-4xl font-bold mt-10"
+              className="text-2xl font-bold mt-10"
               style={{ color: COLORS.primary }}
             >
               Setting Credentials
             </Text>
-            <Text className="text-2xl font-medium text-gray-800">
+            <Text className="text-xl font-medium text-gray-800">
               Let's start your Erkado journey
             </Text>
-            <Text className="text-2xl font-medium mb-4 text-gray-800">
+            <Text className="text-xl font-medium mb-4 text-gray-800">
               with this!
             </Text>
-            <View className="form space-y-9 ">
+            <View className="form space-y-7 ">
               <TextInputField
                 placeholder="Username"
                 onChangeText={(text) => handleChange("username", text)}
@@ -159,7 +169,7 @@ function CredentialsScreen() {
               />
 
               <TouchableOpacity
-                className="py-3 rounded-xl mb-3 mt-6"
+                className="py-2 rounded-lg mb-3 mt-6"
                 style={{ backgroundColor: COLORS.primary }}
                 activeOpacity={0.6}
                 onPress={register}
@@ -172,7 +182,7 @@ function CredentialsScreen() {
                     className="self-center"
                   />
                 ) : (
-                  <Text className="text-white font-bold text-center text-lg">
+                  <Text className="text-white font-bold text-center text-sm">
                     Register
                   </Text>
                 )}

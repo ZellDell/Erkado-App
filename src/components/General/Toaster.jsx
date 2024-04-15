@@ -1,5 +1,4 @@
 import { View, Text } from "react-native";
-import Toast, { BaseToast, ErrorToast } from "react-native-toast-message";
 
 export const toastConfig = {
   SuccessNotif: ({ text1, props }) => (
@@ -8,11 +7,29 @@ export const toastConfig = {
         <Text className="text-xl py-1.5  px-2 bg-white rounded-full">👋🏻</Text>
       </View>
 
-      <View className="items-start justify-center">
-        <Text className="text-sm text-white font-semibold">{props.header}</Text>
+      <View className="items-start justify-center flex-1">
+        <Text className="text-sm text-white font-bold">{props.header}</Text>
         <Text
           className={` text-white font-black ${
-            text1.length > 25 ? "text-sm" : "text-xl"
+            text1.length > 20 ? "text-xs" : "text-lg"
+          }`}
+        >
+          {text1}!
+        </Text>
+      </View>
+    </View>
+  ),
+  InfoNotif: ({ text1, props }) => (
+    <View className="flex-row  rounded-lg w-3/4 py-3 h=1/5 bg-blue-500 px-3 space-x-2">
+      <View className="">
+        <Text className="text-xl py-1.5  px-2 bg-white rounded-full">👋🏻</Text>
+      </View>
+
+      <View className="items-start justify-center flex-1">
+        <Text className="text-sm text-white font-bold">{props.header}</Text>
+        <Text
+          className={` text-white font-black ${
+            text1.length > 20 ? "text-xs" : "text-lg"
           }`}
         >
           {text1}!
@@ -27,10 +44,10 @@ export const toastConfig = {
       </View>
 
       <View className="items-start justify-center">
-        <Text className="text-sm text-red-200 font-semibold">Error:</Text>
+        <Text className="text-sm text-red-200 font-bold">Error:</Text>
         <Text
           className={` text-white font-black ${
-            text1.length > 25 ? "text-sm" : "text-lg"
+            text1.length > 20 ? "text-xs" : "text-lg"
           }`}
         >
           {text1}!
@@ -39,15 +56,15 @@ export const toastConfig = {
     </View>
   ),
   WarningNotif: ({ text1 }) => (
-    <View className="flex-row  rounded-lg w-3/4 py-3 h=1/5 bg-amber-600 px-3 space-x-2 items-center">
+    <View className="flex-row  rounded-lg w-3/4 py-3 h=1/5 bg-orange-400 px-3 space-x-2 items-center">
       <View className="">
         <Text className="text-xl py-1.5  px-2 bg-white rounded-full">⚠️</Text>
       </View>
       <View className="items-start justify-center pr-12">
-        <Text className="text-sm text-orange-100 font-semibold">Warning:</Text>
+        <Text className="text-sm text-orange-100 font-bold">Warning:</Text>
         <Text
           className={` text-white font-black ${
-            text1.length > 25 ? "text-sm" : "text-lg"
+            text1.length > 20 ? "text-xs" : "text-lg"
           }`}
         >
           {text1}!

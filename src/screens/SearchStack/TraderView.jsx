@@ -3,31 +3,25 @@ import {
   Text,
   SafeAreaView,
   Image,
-  StatusBar,
-  Platform,
   StyleSheet,
-  TextInput,
   ScrollView,
-  Button,
   TouchableOpacity,
   Dimensions,
 } from "react-native";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Logout } from "../../features/auth-actions";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { requestUserInfo } from "../../features/user-actions";
+
+import {
+  useNavigation,
+  useRoute,
+  useFocusEffect,
+} from "@react-navigation/native";
+
 import COLORS from "../../constant/colors";
 
-import Traderplaceholder from "../../../assets/profile/Default Trader.png";
-import ErkadoPlaceholder from "../../../assets/Erkado-logo.png";
-import ErkadoTextPlaceholder from "../../../assets/Erkado Text Fill.png";
-import Mapbox from "@rnmapbox/maps";
-import Modal from "react-native-modal";
-import NewUserGreetingsModal from "../../components/HomeComponents/NewUserGreetingsModal";
 import { Icon } from "@rneui/base";
 import Toast from "react-native-toast-message";
-import PreparingScreen from "../PreparingScreen";
+import PLACEHOLDER from "../../constant/profile";
 
 function TraderView() {
   const navigation = useNavigation();
@@ -49,6 +43,12 @@ function TraderView() {
   useEffect(() => {
     console.log(traderDetails);
   }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log(traderDetails);
+    }, [])
+  );
 
   isNewUser = useSelector((state) => state.ui.isNewUser);
   userInfo = useSelector((state) => state.user.userInfo);
@@ -77,14 +77,14 @@ function TraderView() {
               source={
                 traderDetails.ProfileImg
                   ? { uri: traderDetails.ProfileImg }
-                  : Traderplaceholder
+                  : { uri: PLACEHOLDER.trader }
               }
               style={{ height: deviceWidth, width: deviceWidth }}
             />
           </View>
           <View className="flex-1 bg-zinc-50 rounded-t-3xl z-10 -top-4 px-10 py-8 space-y-2">
             <View className=" py-3">
-              <Text className="font-bold text-3xl text-gray-800">
+              <Text className="font-bold text-2xl text-gray-800 flex-wrap">
                 {traderDetails.Fullname}
               </Text>
             </View>
@@ -127,13 +127,13 @@ function TraderView() {
               </Text>
             </View>
 
-            <View className="space-y-3 border-b-2 border-gray-200 pb-5 mb-5">
-              <Text className="text-gray-800 font-bold text-2xl mt-2">
+            <View className="space-y-3 border-b-2 border-gray-200 pb-3 mb-1">
+              <Text className="text-gray-800 font-bold text-xl mt-2">
                 Hey, I'm Looking for
               </Text>
 
               <View style={{ maxHeight: deviceWidth * 0.7 }}>
-                <ScrollView className="pr-4" nestedScrollEnabled={true}>
+                <ScrollView className="pr-2" nestedScrollEnabled={true}>
                   {traderDetails.purchasingDetails.map((traderCrop) => {
                     const associatedCrop = crops.find(
                       (crop) => crop.CropID === traderCrop.CropID
@@ -159,24 +159,24 @@ function TraderView() {
                         <View className="flex-row space-x-2">
                           <Image
                             source={{ uri: associatedCrop.Uri }}
-                            style={{ width: 40, height: 40 }}
+                            style={{ width: 35, height: 35 }}
                             resizeMode="contain"
                             className="m-1"
                           />
                           <View>
-                            <Text className="text-gray-800 font-bold text-lg">
+                            <Text className="text-gray-800 font-bold text-base">
                               {associatedCrop.CropName}
                             </Text>
-                            <Text className="text-gray-500 font-medium">
+                            <Text className="text-gray-500 text-xs font-medium">
                               {traderCrop.CropType} | {qualityType.QualityType}
                             </Text>
                           </View>
                         </View>
                         <View className="items-center">
                           <Text className="text-gray-500 font-medium text-xs">
-                            Price per Sack
+                            Per Kilo
                           </Text>
-                          <Text className="text-gray-800 font-semibold text-lg">
+                          <Text className="text-gray-800 font-extrabold text-base">
                             ₱ {traderCrop.PricePerUnit.toFixed(2)}
                           </Text>
                         </View>
@@ -186,7 +186,7 @@ function TraderView() {
                 </ScrollView>
               </View>
             </View>
-            <View className="space-y-3 border-b-2 border-gray-200 pb-5">
+            <View className="border-b-2 border-gray-200 pb-3 justify-center">
               <TouchableOpacity
                 activeOpacity={0.7}
                 onPress={() => {
@@ -194,7 +194,7 @@ function TraderView() {
                     InfoDetails: traderDetails,
                   });
                 }}
-                className="py-2 rounded-md flex-row justify-center space-x-2 bg-orange-400"
+                className="py-1.5 rounded-md flex-row justify-center space-x-2 bg-orange-400"
               >
                 <Icon
                   type="ionicon"
@@ -202,14 +202,14 @@ function TraderView() {
                   size={23}
                   color="#FFFFFF"
                 />
-                <Text className="text-lg self-center text-white font-bold">
+                <Text className="text-sm self-center text-white font-bold">
                   Send Message
                 </Text>
               </TouchableOpacity>
             </View>
 
             <View className="space-y-3 border-b-2 border-gray-200 pb-5">
-              <Text className="text-gray-800 font-bold text-2xl">Location</Text>
+              <Text className="text-gray-800 font-bold text-xl">Location</Text>
               <View className="mt-5 space-x-3 flex-row w-full rounded-xl ">
                 <Icon
                   type="ionicon"
@@ -217,7 +217,7 @@ function TraderView() {
                   size={30}
                   color={COLORS.primary}
                 />
-                <Text className="font-semibold text-lg text-gray-600">
+                <Text className="font-semibold text-sm text-gray-600">
                   {traderLocation.textAddress}
                 </Text>
               </View>
@@ -234,10 +234,10 @@ function TraderView() {
                     Coordinates: traderLocation.coordinates,
                   });
                 }}
-                className="py-2 rounded-md flex-row justify-center space-x-2 bg-orange-400"
+                className="py-1.5 rounded-md flex-row justify-center space-x-2 bg-orange-400"
               >
                 <Icon type="ionicon" name="locate" size={23} color="#FFFFFF" />
-                <Text className="text-lg self-center text-white font-bold">
+                <Text className="text-sm self-center text-white font-bold">
                   Locate
                 </Text>
               </TouchableOpacity>
@@ -261,10 +261,10 @@ function TraderView() {
                 InfoDetails: traderDetails,
               });
             }}
-            className="py-4 rounded-md"
+            className="py-3 rounded-md"
             style={{ backgroundColor: COLORS.primary }}
           >
-            <Text className="text-lg self-center text-white font-bold">
+            <Text className="text-sm self-center text-white font-bold">
               Send Crop Offer
             </Text>
           </TouchableOpacity>

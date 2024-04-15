@@ -3,40 +3,38 @@ import {
   Text,
   SafeAreaView,
   Image,
-  StatusBar,
-  Platform,
-  StyleSheet,
   TextInput,
   ScrollView,
-  Button,
   TouchableOpacity,
   TouchableWithoutFeedback,
   Keyboard,
   TouchableHighlight,
+  Dimensions,
 } from "react-native";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useState } from "react";
 import { Icon } from "@rneui/base";
 import COLORS from "../../constant/colors";
-import { useDispatch, useSelector } from "react-redux";
-import useQueryTrader from "../../utils/queryTraders";
-import Traderplaceholder from "../../../assets/profile/Default Trader.png";
-import { useNavigation } from "@react-navigation/native";
 
+import useQueryTrader from "../../utils/queryTraders";
+
+import { useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
+import PLACEHOLDER from "../../constant/profile";
 function SearchScreen() {
-  const [query, setQuery] = useState("");
   const { crops } = useSelector((state) => state.crop.crops);
 
   const queryTrader = useQueryTrader("", "trader");
   const navigation = useNavigation();
+  const deviceHeight = Dimensions.get("window").height;
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <ScrollView className="flex-1">
-        <SafeAreaView className="bg-gray-100 pt-5 flex-1 mt-12 px-8 space-y-6">
-          <Text className="font-bold text-2xl text-gray-700">
+      <ScrollView className="flex-1 ">
+        <SafeAreaView className="bg-gray-100 pt-5 flex-1 mt-12  space-y-6">
+          <Text className="font-bold text-xl px-8 text-gray-700">
             Want to know who will buy your crops?
           </Text>
 
-          <View className="flex-row bg-gray-200 p-2 rounded-md space-x-2">
+          <View className="flex-row bg-gray-200 p-2 mx-8 rounded-md space-x-2">
             <Icon
               name="search"
               type="ionicon"
@@ -44,7 +42,7 @@ function SearchScreen() {
               size={30}
             />
             <TextInput
-              className="flex-1 font-semibold text-lg text-gray-700"
+              className="flex-1 font-semibold text-base text-gray-700"
               placeholder="e.g. Trader Name, Trader type..."
               value={queryTrader.value}
               onChangeText={(text) => queryTrader.onChangeText(text)}
@@ -61,7 +59,7 @@ function SearchScreen() {
             )}
           </View>
 
-          {queryTrader.results?.length > 0 && queryTrader.value ? (
+          {queryTrader?.results?.length > 0 && queryTrader.value ? (
             <View>
               {queryTrader.results.map((result, index) => {
                 return (
@@ -74,26 +72,27 @@ function SearchScreen() {
                         TraderDetails: result,
                       });
                     }}
+                    className="px-7"
                   >
-                    <View className="flex-row border-b-2 border-gray-200 py-4 items-center justify-between">
+                    <View className="flex-row border-b-2 border-gray-200 py-4  items-center justify-between">
                       <View className="flex-row space-x-3">
                         <Image
                           source={
                             result.profileImg
                               ? { uri: result.profileImg }
-                              : Traderplaceholder
+                              : { uri: PLACEHOLDER.trader }
                           }
-                          style={{ width: 55, height: 55 }}
+                          style={{ width: 40, height: 40 }}
                           resizeMode="cover"
                           className=" rounded-full"
                         />
                         <View className="items-start">
-                          <Text className="text-2xl font-bold text-gray-800">
+                          <Text className="text-xl font-bold text-gray-800">
                             {result?.Fullname.length > 24
                               ? result?.Fullname.slice(0, 24) + "..."
                               : result?.Fullname}
                           </Text>
-                          <Text className="pl-1 text-md font-medium text-gray-400">
+                          <Text className="pl-1 text-xs font-medium text-gray-400">
                             {result?.TraderType}
                           </Text>
                         </View>
@@ -111,10 +110,10 @@ function SearchScreen() {
               })}
             </View>
           ) : (
-            <View className="space-y-5">
+            <View className="space-y-5 ">
               <View className="flex-row w-full">
                 <ScrollView
-                  className="flex-row space-x-2"
+                  className="flex-row space-x-2 pl-8"
                   horizontal
                   showsHorizontalScrollIndicator={false}
                   contentContainerStyle={{
@@ -122,7 +121,7 @@ function SearchScreen() {
                     flexDirection: "row",
                     flexWrap: "wrap",
                     justifyContent: "flex-start",
-                    marginRight: -200,
+                    marginRight: -100,
                   }}
                 >
                   {crops.map((crop) => (
@@ -156,7 +155,7 @@ function SearchScreen() {
                 </ScrollView>
               </View>
 
-              <View className="border-t-2 border-gray-300 ">
+              <View className="border-t-2 border-gray-300 mx-8">
                 <TouchableOpacity
                   activeOpacity={0.7}
                   className="flex-row justify-center mt-4 py-3 rounded-3xl space-x-2 items-center"

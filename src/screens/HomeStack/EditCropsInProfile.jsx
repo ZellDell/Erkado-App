@@ -1,36 +1,20 @@
 import {
   View,
   Text,
-  SafeAreaView,
-  Image,
-  StatusBar,
-  Platform,
-  StyleSheet,
-  TextInput,
-  ScrollView,
-  Button,
   TouchableOpacity,
-  KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
   ActivityIndicator,
   BackHandler,
-  Animated,
+  StyleSheet,
 } from "react-native";
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import COLORS from "../../constant/colors";
-import SetupProfileImage from "../../components/ProfileComponents/SetupProfileImage";
-import * as ImagePicker from "expo-image-picker";
-import SetupAddress from "../../components/ProfileComponents/SetupAddress";
-import * as Location from "expo-location";
+
 import SetupCrops from "../../components/ProfileComponents/SetupCrops";
 import AddCropBottomSheet from "../../components/ProfileComponents/AddCropBottomSheet";
 import Toast from "react-native-toast-message";
-import {
-  imgUpload,
-  setUserInfo,
-  updateUserInfoCrops,
-} from "../../features/user-actions";
+import { updateUserInfoCrops } from "../../features/user-actions";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation, useRoute } from "@react-navigation/native";
 
@@ -141,16 +125,22 @@ function EditCropsInProfile() {
   };
   const setCrop = (quality, type, cropPrice, mode) => {
     console.log(
-      quality + " " + type + " " + cropPrice + " " + selectedCrop.CropID
+      "===============" +
+        quality +
+        " " +
+        type +
+        " " +
+        cropPrice +
+        " " +
+        selectedCrop.CropID
     );
     const existingCrop = myCrops.find(
       (crop) =>
         crop.selectedCrop.CropID == selectedCrop.CropID &&
         crop.QualityTypeID == quality &&
-        crop.CropType == type &&
-        crop.Price == cropPrice
+        crop.CropType == type
     );
-
+    console.log("Existing crop : ", existingCrop);
     if (mode === "update") {
       if (existingCrop) {
         console.log("There is duplicate -  before: ", myCrops);
@@ -191,7 +181,7 @@ function EditCropsInProfile() {
     }
 
     console.log("Existing crop : ", existingCrop);
-    if (!existingCrop) {
+    if (!existingCrop || existingCrop == undefined) {
       setMyCrops([
         ...myCrops,
         {
@@ -205,6 +195,7 @@ function EditCropsInProfile() {
 
     handlePriceModal();
     clearCurrents();
+    setSelectedCrop(null);
   };
 
   const removeCrop = async (cropToRemove) => {
@@ -223,6 +214,10 @@ function EditCropsInProfile() {
   };
 
   const handleSetProfile = async () => {
+    if (!checkCropChanges()) {
+      navigation.goBack();
+      return;
+    }
     setIsLoading(true);
 
     const response = await dispatch(
@@ -271,70 +266,77 @@ function EditCropsInProfile() {
   }, []);
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View className="bg-gray-100 pt-5 flex-1 py-5 px-3 items-center">
-        <View className="flex-2 mt-5">
-          <Text
-            className="text-3xl p-4 font-bold"
-            style={{ color: COLORS.primary }}
-          >
-            Edit Profile
-          </Text>
-        </View>
-        <View className="flex-2 w-3/5"></View>
-        {/* STEPS */}
-        <View className="flex-1 w-11/12  mt-10">
-          <SetupCrops
-            handleOpenBottomSheet={handleOpenBottomSheet}
-            crops={myCrops}
-            removeCrop={removeCrop}
-            handlePriceModal={handlePriceModal}
-            priceModal={priceModal}
-            currentPrice={currentPrice}
-            isLoading={isLoading}
-            selectedCrop={selectedCrop}
-            updateCrop={updateCrop}
-            setCrop={setCrop}
-            currentAttributes={currentAttributes}
-            clearCurrents={clearCurrents}
-            reConfirmModal={reConfirmModal}
-            setIsDiscarded={setIsDiscarded}
-            setReConfirmModal={setReConfirmModal}
-          />
-        </View>
-        {/* Preve - Next - Submit */}
+    <View className="bg-gray-100 pt-5 flex-1 items-center">
+      <View className="flex-2 mt-5 ">
+        <Text
+          className="text-2xl p-4 font-bold"
+          style={{ color: COLORS.primary }}
+        >
+          Edit Profile
+        </Text>
+      </View>
 
-        {!isKeyboardVisible && (
-          <View className="flex-2 flex-row space-x-4 w-11/12">
-            <TouchableOpacity
-              className="flex-1 py-4 rounded-xl "
-              style={{ backgroundColor: COLORS.primary }}
-              onPress={handleSetProfile}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <ActivityIndicator
-                  size="small"
-                  color="#ffffff"
-                  className="self-center"
-                />
-              ) : (
-                <Text className="font-bold text-white text-xl text-center">
-                  Save
-                </Text>
-              )}
-            </TouchableOpacity>
-          </View>
-        )}
-
-        <AddCropBottomSheet
-          bottomSheetRef={bottomSheetRef}
-          handlecloseBottomSheet={handlecloseBottomSheet}
-          handleSelectedCrop={handleSelectedCrop}
+      {/* STEPS */}
+      <View className="flex-1 w-full  mt-10">
+        <SetupCrops
+          handleOpenBottomSheet={handleOpenBottomSheet}
+          crops={myCrops}
+          removeCrop={removeCrop}
+          handlePriceModal={handlePriceModal}
+          priceModal={priceModal}
+          currentPrice={currentPrice}
+          isLoading={isLoading}
+          selectedCrop={selectedCrop}
+          updateCrop={updateCrop}
+          setCrop={setCrop}
+          currentAttributes={currentAttributes}
+          clearCurrents={clearCurrents}
+          reConfirmModal={reConfirmModal}
+          setIsDiscarded={setIsDiscarded}
+          setReConfirmModal={setReConfirmModal}
         />
       </View>
-    </TouchableWithoutFeedback>
+      {/* Preve - Next - Submit */}
+
+      {!isKeyboardVisible && (
+        <View
+          className="flex-2 flex-row space-x-4 w-full bg-white py-3 px-7 border-t-2 border-lime-500 z-20"
+          style={styles.shadow}
+        >
+          <TouchableOpacity
+            className="flex-1 py-3 rounded-xl"
+            style={{ backgroundColor: COLORS.primary }}
+            onPress={handleSetProfile}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <ActivityIndicator
+                size="small"
+                color="#ffffff"
+                className="self-center"
+              />
+            ) : (
+              <Text className="font-bold text-white text-base text-center">
+                Save
+              </Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      )}
+
+      <AddCropBottomSheet
+        bottomSheetRef={bottomSheetRef}
+        handlecloseBottomSheet={handlecloseBottomSheet}
+        handleSelectedCrop={handleSelectedCrop}
+      />
+    </View>
   );
 }
-
+const styles = StyleSheet.create({
+  shadow: {
+    shadowColor: "#000",
+    elevation: 25,
+    backgroundColor: "white",
+  },
+});
 export default EditCropsInProfile;

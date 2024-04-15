@@ -56,7 +56,7 @@ function LoginScreen() {
       await Toast.show({
         type: result.type,
         text1: result.message,
-        visibilityTime: 4000,
+        visibilityTime: 3000,
         swipeable: true,
       });
       setIsLoading(false);
@@ -95,14 +95,14 @@ function LoginScreen() {
         </SafeAreaView>
 
         {/* FORM FIELD */}
-        <View className="flex-1 bg-white px-10 py-12 rounded-t-[40]">
+        <View className="flex-1 bg-white px-8 py-10 rounded-t-3xl">
           <Text
-            className="font-bold text-4xl mb-5 text-center"
+            className="font-bold text-3xl mb-5 text-center"
             style={{ color: COLORS.primary }}
           >
             Sign In
           </Text>
-          <View className=" form space-y-2 ">
+          <View className=" form space-y-10">
             <TextInputField
               placeholder="Username"
               onChangeText={(text) => handleChange("username", text)}
@@ -116,12 +116,6 @@ function LoginScreen() {
               iconName="lock-closed"
               isPassword={true}
             />
-
-            <TouchableOpacity className="flex items-end mb-8 ">
-              <Text className="text-gray-700 font-medium">
-                Forgot Password?
-              </Text>
-            </TouchableOpacity>
 
             <TouchableOpacity
               className="py-3 rounded-xl mb-3"

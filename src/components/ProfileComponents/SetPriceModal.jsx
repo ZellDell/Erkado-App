@@ -1,19 +1,13 @@
 import {
   View,
   Text,
-  SafeAreaView,
   Image,
-  StatusBar,
-  Platform,
   StyleSheet,
-  TextInput,
-  ScrollView,
-  Button,
   TouchableOpacity,
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Modal from "react-native-modal";
 import { Icon } from "@rneui/base";
 import TextInputField from "../General/TextInputField";
@@ -21,7 +15,7 @@ import COLORS from "../../constant/colors";
 import { Dropdown } from "react-native-element-dropdown";
 import { useSelector } from "react-redux";
 
-import placeholder from "../../../assets/profile/Default Farmer.png";
+import PLACEHOLDER from "../../constant/profile";
 
 function SetPriceModal({
   priceModal,
@@ -84,8 +78,22 @@ function SetPriceModal({
 
     setInvalid(false);
 
+    if (
+      currentAttributes &&
+      currentPrice &&
+      CropQuality == currentAttributes.quality &&
+      CropType == currentAttributes.type &&
+      cropPrice == currentPrice
+    ) {
+      handlePriceModal();
+      clearFields();
+      clearCurrents();
+      return;
+    }
+
     console.log("Adding these", CropQuality, CropType, cropPrice);
     console.log(currentPrice, currentAttributes);
+
     await setCrop(
       CropQuality,
       CropType,
@@ -93,7 +101,6 @@ function SetPriceModal({
       currentPrice && currentAttributes ? "update" : null
     );
     clearFields();
-
     return;
   };
 
@@ -124,12 +131,14 @@ function SetPriceModal({
           <View className="flex  bg-zinc-100 rounded-md py-5 px-7 space-y-5 justify-center">
             <Image
               source={
-                selectedCrop.Uri ? { uri: selectedCrop.Uri } : placeholder
+                selectedCrop.Uri
+                  ? { uri: selectedCrop.Uri }
+                  : { uri: PLACEHOLDER.farmer }
               }
               style={{ height: 70, width: 70 }}
               className="self-center"
             />
-            <Text className="font-bold text-2xl self-center">
+            <Text className="font-bold text-xl self-center">
               {selectedCrop.CropName}
             </Text>
             <TextInputField

@@ -1,21 +1,23 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { queryTrader } from "../features/trader-actions";
+import { fetchTransaction } from "../features/transaction-actions";
 
-const useQueryTrader = (initialValue, queryType) => {
+const useQueryTransaction = (initialValue, userType) => {
   const dispatch = useDispatch();
   const [value, setValue] = useState(initialValue);
   const [results, setResult] = useState([]);
 
   const handleChange = async (inputText) => {
     setValue(inputText);
-
+    console.log("USERTYPE = ", userType);
     try {
-      const response = await dispatch(queryTrader(inputText, queryType));
+      const transaction = await dispatch(
+        fetchTransaction({ UserType: userType, query: inputText })
+      );
 
-      setResult(response?.data);
-      console.log(response.data);
+      setResult(transaction?.data.transactions);
+      console.log("=========", transaction?.data.transactions);
     } catch (error) {
       console.log(
         "Error fetching data, ",
@@ -23,6 +25,10 @@ const useQueryTrader = (initialValue, queryType) => {
       );
     }
   };
+
+  // useEffect(() => {
+  //   handleChange(initialValue);
+  // }, []);
 
   return {
     value,
@@ -33,4 +39,4 @@ const useQueryTrader = (initialValue, queryType) => {
   };
 };
 
-export default useQueryTrader;
+export default useQueryTransaction;

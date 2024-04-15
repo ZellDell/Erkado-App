@@ -3,47 +3,28 @@ import {
   Text,
   SafeAreaView,
   Image,
-  StatusBar,
-  Platform,
   StyleSheet,
-  TextInput,
-  ScrollView,
-  Button,
   TouchableOpacity,
   Dimensions,
   ActivityIndicator,
 } from "react-native";
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Logout } from "../../features/auth-actions";
+
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { requestUserInfo } from "../../features/user-actions";
+
 import COLORS from "../../constant/colors";
-
-import Farmerplaceholder from "../../../assets/profile/Default Farmer.png";
-import Traderplaceholder from "../../../assets/profile/Default Trader.png";
-
-import ErkadoPlaceholder from "../../../assets/Erkado-logo.png";
-import ErkadoTextPlaceholder from "../../../assets/Erkado Text Fill.png";
 
 import Mapbox, { CircleLayer, Callout, ShapeSource } from "@rnmapbox/maps";
 
-import Modal from "react-native-modal";
-import NewUserGreetingsModal from "../../components/HomeComponents/NewUserGreetingsModal";
 import { Icon } from "@rneui/base";
-import Toast from "react-native-toast-message";
-import PreparingScreen from "../PreparingScreen";
-import getRoute from "../../utils/getRoute";
 
 import { useSharedValue } from "react-native-reanimated";
 import { HapticModeEnum, Slider } from "react-native-awesome-slider";
-import {
-  queryTrader,
-  queryTraderInRadius,
-} from "../../features/trader-actions";
+import { queryTraderInRadius } from "../../features/trader-actions";
 
-import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import ProximitySearchResult from "../../components/SearchComponents/ProximitySearchResult";
+import PLACEHOLDER from "../../constant/profile";
 
 function ProximitySearch() {
   const navigation = useNavigation();
@@ -276,6 +257,7 @@ function ProximitySearch() {
               <Mapbox.PointAnnotation
                 id="UserPoint"
                 key="UserPoint"
+                ref={(ref) => (this.markerRef = ref)}
                 coordinate={[
                   parseFloat(userInfo.coordinates.split(",")[1]),
                   parseFloat(userInfo.coordinates.split(",")[0]),
@@ -286,11 +268,12 @@ function ProximitySearch() {
                     source={
                       userInfo.profileImg
                         ? { uri: userInfo.profileImg }
-                        : Farmerplaceholder
+                        : { uri: PLACEHOLDER.farmer }
                     }
                     style={{ width: 20, height: 20 }}
                     resizeMode="cover"
                     className=" rounded-full"
+                    onLoad={() => this.markerRef.refresh()}
                   />
                 </View>
                 <Callout title="You" />
@@ -315,7 +298,7 @@ function ProximitySearch() {
                           source={
                             trader.profileImg
                               ? { uri: trader.profileImg }
-                              : Traderplaceholder
+                              : { uri: PLACEHOLDER.trader }
                           }
                           style={{ width: 20, height: 20 }}
                           resizeMode="cover"
@@ -337,26 +320,26 @@ function ProximitySearch() {
           {/* Radius Control 1/4 */}
           {result?.length < 1 && (
             <View
-              className="flex-2 bg-white rounded-t-3xl z-10 -top-5 px-10 py-8 space-y-3"
+              className="flex-2 bg-white rounded-t-3xl z-10 -top-5 px-10 pt-8 space-y-3"
               style={{ height: deviceHeight * 0.3 }}
             >
               <View className="flex-row justify-between items-center">
                 <View>
-                  <Text className="text-gray-800 text-2xl font-bold">
+                  <Text className="text-gray-800 text-xl font-bold">
                     Proximity Search
                   </Text>
-                  <Text className="text-gray-600 text-md font-semibold">
+                  <Text className="text-gray-600 text-xs font-semibold">
                     Set Radius
                   </Text>
                 </View>
                 <Text
-                  className="text-xl font-bold"
+                  className="text-lg font-bold"
                   style={{ color: COLORS.primary }}
                 >
                   {KM} KM
                 </Text>
               </View>
-              <View className="flex-1  border-b-2 border-gray-300 mb-2">
+              <View className="flex-1  border-b-2 border-gray-300 mb-3">
                 <Slider
                   progress={progress}
                   style={styles.slider}
@@ -391,7 +374,7 @@ function ProximitySearch() {
                     className="self-center"
                   />
                 ) : (
-                  <Text className="text-white text-lg font-bold self-center">
+                  <Text className="text-white text-base font-bold self-center">
                     Find
                   </Text>
                 )}
@@ -401,16 +384,16 @@ function ProximitySearch() {
 
           {hadSearch && (
             <View
-              className="absolute bottom-0 bg-white p-5 w-full"
+              className="absolute bottom-0 bg-white p-5 w-full border-t-2 border-lime-500"
               style={styles.shadow}
             >
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={!mapRendering ? RestartRadiusSearch : () => {}}
                 style={{ backgroundColor: COLORS.primary }}
-                className="flex-2 py-3 rounded-lg"
+                className="flex-2 py-2 rounded-lg "
               >
-                <Text className="text-white text-lg font-semibold self-center">
+                <Text className="text-white text-base font-semibold self-center">
                   Use Proximity Search Again
                 </Text>
               </TouchableOpacity>

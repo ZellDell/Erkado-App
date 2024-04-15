@@ -1,9 +1,8 @@
 import Toast from "react-native-toast-message";
 import { uiActions } from "./ui-slice";
-import { authActions } from "./auth-slice";
+
 import { userActions } from "./user-slice";
 import client from "../api/client";
-import authSlice from "./auth-slice";
 
 export const requestUserInfo = () => {
   return async (dispatch) => {

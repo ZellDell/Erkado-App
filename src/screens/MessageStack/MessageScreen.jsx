@@ -3,31 +3,24 @@ import {
   Text,
   SafeAreaView,
   Image,
-  StatusBar,
-  Platform,
-  StyleSheet,
   TextInput,
   ScrollView,
-  Button,
   TouchableOpacity,
   TouchableWithoutFeedback,
   Keyboard,
   TouchableHighlight,
 } from "react-native";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Icon } from "@rneui/base";
 import COLORS from "../../constant/colors";
-import Traderplaceholder from "../../../assets/profile/Default Trader.png";
-import Farmerplaceholder from "../../../assets/profile/Default Farmer.png";
+
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMessages } from "../../features/message-actions";
 import getTimeAgoUtil from "../../utils/getTimeAgoUtil";
 
-import {
-  useNavigation,
-  useRoute,
-  useFocusEffect,
-} from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import useQueryMessages from "../../utils/queryMessages";
+import PLACEHOLDER from "../../constant/profile";
 
 function MessageScreen() {
   const navigation = useNavigation();
@@ -36,20 +29,15 @@ function MessageScreen() {
   const [conversations, setConversations] = useState([]);
 
   const userType = useSelector((state) => state.user.userInfo.userType);
-
-  useEffect(() => {
-    fetchConvos();
-
-    return () => {
-      setConversations([]);
-    };
-  }, []);
+  const userID = useSelector((state) => state.user.userInfo.userId);
 
   useFocusEffect(
     React.useCallback(() => {
       fetchConvos();
     }, [])
   );
+
+  const queryMessages = useQueryMessages("", userType);
 
   const fetchConvos = async () => {
     try {
@@ -67,7 +55,7 @@ function MessageScreen() {
       <ScrollView className="flex-1">
         <SafeAreaView className="bg-gray-100 pt-5 flex-1 mt-12 px-8 space-y-4">
           <Text className="font-bold text-2xl text-gray-700">
-            Chat ({conversations?.length ? conversations?.length : 0})
+            Chat ({queryMessages.results?.length ? conversations?.length : 0})
           </Text>
 
           <View className="flex-row bg-gray-200 p-2 rounded-md space-x-2">
@@ -80,11 +68,11 @@ function MessageScreen() {
             <TextInput
               className="flex-1 font-semibold text-lg text-gray-700"
               placeholder="e.g. Trader Name.."
-              value={query}
-              onChangeText={(text) => setQuery(text)}
+              value={queryMessages.value}
+              onChangeText={(text) => queryMessages.onChangeText(text)}
             />
-            {query?.length > 0 && (
-              <TouchableOpacity onPress={() => setQuery("")}>
+            {queryMessages.value?.length > 0 && (
+              <TouchableOpacity onPress={() => queryMessages.onChangeText("")}>
                 <Icon
                   name="close-circle"
                   type="ionicon"
@@ -98,11 +86,12 @@ function MessageScreen() {
 
           <View>
             <View className="flex justify-center mt-4">
-              {conversations ? (
-                conversations.map((convo, index) => {
+              {queryMessages?.results?.length > 0 ? (
+                queryMessages.results.map((convo, index) => {
                   console.log("==", convo);
                   const TimeAgo = useGetTimeAgo.getTimeAgo(convo.TimeStamp);
-                  return (
+
+                  return convo.Info[0] ? (
                     <TouchableHighlight
                       key={index}
                       activeOpacity={1}
@@ -117,35 +106,35 @@ function MessageScreen() {
                         <View className="flex-row space-x-3">
                           <Image
                             source={
-                              convo.Info[0].ProfileImg
-                                ? { uri: convo.Info[0].ProfileImg }
-                                : Traderplaceholder
+                              convo.Info[0]?.ProfileImg
+                                ? { uri: convo.Info[0]?.ProfileImg }
+                                : { uri: PLACEHOLDER.trader }
                             }
                             style={{ width: 55, height: 55 }}
                             resizeMode="cover"
                             className=" rounded-full"
                           />
                           <View className="items-start">
-                            <Text className="text-2xl font-bold text-gray-800">
-                              {convo.Info[0].Fullname.length > 24
-                                ? convo.Info[0].Fullname.slice(0, 24) + "..."
-                                : convo.Info[0].Fullname}
+                            <Text className="text-base font-bold text-gray-800">
+                              {convo.Info[0]?.Fullname.length > 24
+                                ? convo.Info[0]?.Fullname.slice(0, 24) + "..."
+                                : convo.Info[0]?.Fullname}
                             </Text>
                             <Text className=" text-md font-semibold text-gray-700">
-                              {convo.isLastSender ? "You: " : null}
-                              {convo.Message.length > 24
+                              {convo?.isLastSender ? "You: " : null}
+                              {convo?.Message.length > 24
                                 ? convo.Message.slice(0, 24) + "..."
                                 : convo.Message}
                             </Text>
                           </View>
                         </View>
 
-                        <Text className="text-md font-semibold text-gray-500">
+                        <Text className="text-xs font-semibold text-gray-500">
                           {TimeAgo}
                         </Text>
                       </View>
                     </TouchableHighlight>
-                  );
+                  ) : null;
                 })
               ) : (
                 <Text className="self-center text-gray-400 font-semibold mt-5">

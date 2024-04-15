@@ -1,27 +1,21 @@
 import {
   View,
   Text,
-  SafeAreaView,
   Image,
-  StatusBar,
   Platform,
   StyleSheet,
-  TextInput,
   ScrollView,
-  Button,
   TouchableOpacity,
-  KeyboardAvoidingView,
-  Keyboard,
 } from "react-native";
 
 import COLORS from "../../constant/colors";
-import ProgressBar from "react-native-animated-progress";
-import placeholder from "../../../assets/profile/Default Farmer.png";
+
 import { Icon } from "@rneui/base";
 import { useSelector } from "react-redux";
 import SetPriceModal from "./SetPriceModal";
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import ReconfirmModal from "./ReconfirmModal";
+import PLACEHOLDER from "../../constant/profile";
 
 function SetupCrops(props) {
   const { quality } = useSelector((state) => state.crop.quality);
@@ -50,8 +44,8 @@ function SetupCrops(props) {
         setReConfirmModal={props.setReConfirmModal}
       />
 
-      <View className="flex-row justify-between items-center">
-        <Text className="text-2xl font-bold" style={{ color: COLORS.primary }}>
+      <View className="flex-row justify-between items-center px-5">
+        <Text className="text-xl font-bold" style={{ color: COLORS.primary }}>
           Setup Crops
         </Text>
         <TouchableOpacity
@@ -60,7 +54,7 @@ function SetupCrops(props) {
           onPress={props.handleOpenBottomSheet}
           disabled={props.isLoading}
         >
-          <Text className="text-white text-lg self-center">Add Crops</Text>
+          <Text className="text-white text-base self-center">Add Crops</Text>
         </TouchableOpacity>
       </View>
       <ScrollView className="mt-8">
@@ -80,29 +74,27 @@ function SetupCrops(props) {
                   "-" +
                   crop.Price
                 }
-                className="flex-row justify-between items-center bg-zinc-50 mb-5 p-5 rounded-md mx-3"
+                className="flex-row justify-between items-center bg-zinc-50 mb-5 p-5 mx-3 rounded-md "
                 style={styles.shadow}
               >
-                <View className="flex-row space-x-3">
+                <View className="flex-row space-x-3 items-center">
                   <Image
                     source={
-                      crop.selectedCrop.Uri
-                        ? { uri: crop.selectedCrop.Uri }
-                        : placeholder
+                      crop.selectedCrop.Uri && { uri: crop.selectedCrop.Uri }
                     }
-                    style={{ width: 40, height: 40 }}
+                    style={{ width: 35, height: 35 }}
                     resizeMode="contain"
                   />
                   <View>
-                    <Text className="font-bold">
+                    <Text className="font-bold text-base">
                       {crop.selectedCrop.CropName}
                     </Text>
-                    <Text className="font-semibold text-gray-500 text-sm">
+                    <Text className="font-semibold text-gray-500 text-xs">
                       {crop.CropType.length > 11
                         ? crop.CropType.substring(0, 11) + "..."
                         : crop.CropType}
                     </Text>
-                    <Text className="font-semibold text-lime-500  text-xs">
+                    <Text className="font-semibold text-lime-500 text-xs">
                       {qualityType.QualityType.length > 11
                         ? qualityType.QualityType.substring(0, 11) + "..."
                         : qualityType.QualityType}
@@ -112,10 +104,10 @@ function SetupCrops(props) {
 
                 <View className="flex items-center space-y-2">
                   <Text className="font-bold text-xs self-center text-lime-600">
-                    Price
+                    Per kilo
                   </Text>
 
-                  <Text className="self-center font-bold ">
+                  <Text className="self-center text-sm font-bold ">
                     ₱ {crop?.Price}
                   </Text>
                 </View>
@@ -135,21 +127,21 @@ function SetupCrops(props) {
                       name="color-wand"
                       type="ionicon"
                       color="#555555"
-                      size={30}
+                      size={25}
                     />
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => props.removeCrop(crop)}
                     disabled={props.isLoading}
                   >
-                    <Icon name="trash" type="ionicon" color="red" size={30} />
+                    <Icon name="trash" type="ionicon" color="red" size={25} />
                   </TouchableOpacity>
                 </View>
               </View>
             );
           })
         ) : (
-          <Text className="self-center font-semibold text-gray-400">
+          <Text className="self-center text-sm font-semibold text-gray-400">
             You don't have any crops to purchase yet.
           </Text>
         )}
@@ -174,6 +166,11 @@ const styles = StyleSheet.create({
         elevation: 5,
       },
     }),
+  },
+  boxshadow: {
+    shadowColor: "#000",
+    elevation: 25,
+    backgroundColor: "white",
   },
 });
 

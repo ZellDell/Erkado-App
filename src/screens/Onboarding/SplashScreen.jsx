@@ -1,17 +1,5 @@
-import {
-  View,
-  Text,
-  SafeAreaView,
-  Image,
-  StatusBar,
-  Platform,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  ActivityIndicator,
-  TouchableHighlight,
-} from "react-native";
-import React, { useLayoutEffect, useState } from "react";
+import { View, Text, Image, TouchableOpacity } from "react-native";
+import React from "react";
 import { useNavigation } from "@react-navigation/native";
 import { Icon } from "@rneui/base";
 
@@ -35,7 +23,7 @@ function SplashScreen() {
             resizeMode="contain"
           />
         </View>
-        <Text className="font-medium text-2xl text-white">
+        <Text className="font-medium text-xl text-white">
           Sales Made, Fair Trade.
         </Text>
       </View>
@@ -45,7 +33,7 @@ function SplashScreen() {
         }}
       >
         <View className="flex-row flex-2 p-5 justify-center items-center">
-          <Text className="font-light text-white text-lg">
+          <Text className=" font-medium text-white text-lg">
             Press to continue
           </Text>
           <Icon

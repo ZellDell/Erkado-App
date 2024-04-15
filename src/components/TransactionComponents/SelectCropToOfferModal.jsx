@@ -1,28 +1,18 @@
 import {
   View,
   Text,
-  SafeAreaView,
   Image,
-  StatusBar,
-  Platform,
   StyleSheet,
-  TextInput,
   ScrollView,
-  Button,
   TouchableOpacity,
-  TouchableWithoutFeedback,
-  Keyboard,
   Dimensions,
 } from "react-native";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Modal from "react-native-modal";
-import { Icon } from "@rneui/base";
-import TextInputField from "../General/TextInputField";
-import COLORS from "../../constant/colors";
-import { Dropdown } from "react-native-element-dropdown";
-import { useSelector } from "react-redux";
 
-import placeholder from "../../../assets/profile/Default Farmer.png";
+import COLORS from "../../constant/colors";
+
+import { useSelector } from "react-redux";
 
 function SelectCropToOfferModal({
   selectCropToOfferModal,
@@ -127,7 +117,7 @@ function SelectCropToOfferModal({
       return;
     }
     setSelectedCropsToOffer(selectedCrops);
-    handleSelectCropToOffer();
+    handleSelectCropToOffer(false);
   };
 
   return (
@@ -146,8 +136,8 @@ function SelectCropToOfferModal({
                 }
           }
         >
-          <View className="flex  bg-zinc-100 rounded-md py-5 px-7 space-y-5 justify-center">
-            <View>
+          <View className="flex  bg-zinc-100 rounded-md py-5  space-y-5 justify-center">
+            <View className="px-7">
               <Text className="text-2xl font-bold self-center mt-2">
                 Select Crop to Offer
               </Text>
@@ -162,14 +152,15 @@ function SelectCropToOfferModal({
             </View>
 
             <View
-              className=" bg-zinc-100 pb-4 pt-4 space-x-5 "
-              style={{ height: height * 0.3 }}
+              className=" bg-zinc-100 px-4 pt-4 space-x-5 "
+              style={{ height: height * 0.35 }}
             >
               <ScrollView
                 showsVerticalScrollIndicator={false}
                 nestedScrollEnabled={true}
               >
                 <View
+                  className="w-full"
                   style={{
                     flex: 1,
                     flexDirection: "row",
@@ -206,7 +197,7 @@ function SelectCropToOfferModal({
                           "-" +
                           traderCrop.CropType
                         }
-                        className="flex rounded-lg px-3 py-1.5 bg-white items-center justify-center border-2 border-gray-300 mt-2 ml-2"
+                        className="flex rounded-lg  bg-white items-center justify-center border-2 border-gray-300 mt-2 ml-2"
                         style={[
                           isCropSelected(
                             associatedCrop,
@@ -218,7 +209,7 @@ function SelectCropToOfferModal({
                             : null,
                         ]}
                       >
-                        <View className="flex space-x-2 items-center justify-center">
+                        <View className="flex space-x-2 py-2 px-4 items-center justify-center ">
                           <Image
                             source={{ uri: associatedCrop.Uri }}
                             style={{ width: 20, height: 20 }}
@@ -226,16 +217,16 @@ function SelectCropToOfferModal({
                             className="m-1 self-center"
                           />
                           <View>
-                            <Text className="text-gray-800 font-bold text-base self-center">
+                            <Text className="text-gray-800 font-bold text-xs self-center">
                               {associatedCrop.CropName}
                             </Text>
-                            <Text className="text-gray-500 font-medium text-xs self-center">
+                            <Text className="text-gray-500 font-bold text-[10px] self-center">
                               {traderCrop.CropType &&
                               traderCrop.CropType.length > 8
                                 ? traderCrop.CropType.substring(0, 9) + "..."
                                 : traderCrop.CropType}
                             </Text>
-                            <Text className="text-gray-500 font-medium text-xs self-center">
+                            <Text className="text-gray-500 font-bold text-[10px] self-center">
                               {qualityType.QualityType &&
                               qualityType.QualityType.length > 8
                                 ? qualityType.QualityType.substring(0, 9) +
@@ -251,7 +242,7 @@ function SelectCropToOfferModal({
               </ScrollView>
             </View>
 
-            <View className="flex rounded-md py-5  space-y-5 justify-center">
+            <View className="flex rounded-md py-5  px-7 space-y-5 justify-center">
               <TouchableOpacity
                 style={{ backgroundColor: COLORS.primary }}
                 className="p-3 rounded-md"
@@ -264,7 +255,7 @@ function SelectCropToOfferModal({
               {initialSelection && (
                 <TouchableOpacity
                   className="p-3 rounded-md bg-gray-600"
-                  onPress={handleSelectCropToOffer}
+                  onPress={() => handleSelectCropToOffer(true)}
                 >
                   <Text className="self-center font-bold text-md  text-white">
                     Cancel

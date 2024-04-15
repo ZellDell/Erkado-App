@@ -1,10 +1,10 @@
 import client from "../api/client";
 
-export const fetchMessages = (userType) => {
+export const fetchMessages = (query, userType) => {
   return async (dispatch) => {
     const sendRequest = async () => {
       const response = await client.get(`/messages/`, {
-        params: { userType },
+        params: { query, userType },
       });
 
       return response;
@@ -12,7 +12,7 @@ export const fetchMessages = (userType) => {
 
     try {
       const response = await sendRequest();
-      console.log("Response", response.data.flat());
+      console.log(response.data);
       return { success: true, data: response.data };
     } catch (err) {
       console.log(err?.response?.data.message);

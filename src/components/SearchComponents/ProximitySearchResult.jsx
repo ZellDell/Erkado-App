@@ -1,40 +1,25 @@
 import {
   View,
   Text,
-  SafeAreaView,
   Image,
-  StatusBar,
-  Platform,
-  StyleSheet,
-  TextInput,
-  ScrollView,
-  Button,
-  TouchableOpacity,
-  KeyboardAvoidingView,
-  Keyboard,
   TouchableHighlight,
+  Dimensions,
 } from "react-native";
-import React, {
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useMemo, useState } from "react";
 import COLORS from "../../constant/colors";
-import ProgressBar from "react-native-animated-progress";
-import Traderplaceholder from "../../../assets/profile/Default Trader.png";
+
 import { Icon } from "@rneui/base";
 
 import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import { useSelector } from "react-redux";
+
 import { useNavigation } from "@react-navigation/native";
+import PLACEHOLDER from "../../constant/profile";
 
 function ProximitySearchResult({ result, bottomSheetRef }) {
-  const snapPoints = useMemo(() => ["35%", "80"], []);
+  const snapPoints = useMemo(() => ["40%", "80"], []);
   const navigation = useNavigation();
   const [index, setIndex] = useState(-1);
-
+  const deviceHeight = Dimensions.get("window").height;
   return (
     <BottomSheet
       index={-1}
@@ -50,19 +35,22 @@ function ProximitySearchResult({ result, bottomSheetRef }) {
       }}
       onChange={(index) => setIndex(index)}
     >
-      <View className="flex-1 py-5 px-7 relative space-y-3 pb-28">
+      <View className="flex-1  relative space-y-3">
         <Icon
           name={index === 1 ? "chevron-down" : "chevron-up"}
           type="ionicon"
           color="#dedede"
           size={30}
         />
-        <Text className="text-3xl font-bold" style={{ color: COLORS.primary }}>
+        <Text
+          className="px-7 text-2xl font-bold"
+          style={{ color: COLORS.primary }}
+        >
           Results
         </Text>
 
         <BottomSheetScrollView
-          contentContainerStyle={{ marginRight: 15 }}
+          contentContainerStyle={{ paddingBottom: deviceHeight * 0.15 }}
           showsVerticalScrollIndicator={false}
         >
           {result ? (
@@ -80,28 +68,28 @@ function ProximitySearchResult({ result, bottomSheetRef }) {
                     });
                   }}
                 >
-                  <View className="flex-row border-b-2 border-gray-200 py-4 items-center justify-between">
+                  <View className="flex-row border-b-2 px-7   border-gray-200 py-4 items-center justify-between">
                     <View className="flex-row space-x-3">
                       <Image
                         source={
-                          trader.profileImg
-                            ? { uri: trader.profileImg }
-                            : Traderplaceholder
+                          trader?.profileImg
+                            ? { uri: trader?.profileImg }
+                            : { uri: PLACEHOLDER.trader }
                         }
-                        style={{ width: 55, height: 55 }}
+                        style={{ width: 45, height: 45 }}
                         resizeMode="cover"
                         className=" rounded-full"
                       />
                       <View className="items-start">
-                        <Text className="text-2xl font-bold text-gray-800">
+                        <Text className="text-lg font-bold text-gray-800">
                           {trader?.Fullname.length > 20
                             ? trader?.Fullname.slice(0, 20) + "..."
                             : trader?.Fullname}
                         </Text>
-                        <Text className="pl-1 text-md font-medium text-gray-400">
+                        <Text className="pl-1 text-xs font-medium text-gray-400">
                           {trader?.TraderType}
                         </Text>
-                        <Text className="pl-1 text-md font-medium text-lime-500">
+                        <Text className="pl-1 text-xs font-medium text-lime-500">
                           {trader?.distance} km away
                         </Text>
                       </View>

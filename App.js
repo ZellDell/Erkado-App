@@ -34,6 +34,7 @@ import TraderProfile from "./src/screens/HomeStack/TraderProfile";
 import OfferTransaction from "./src/screens/TransactionStack/OfferTransaction";
 import TransactionListScreen from "./src/screens/TransactionStack/TransactionListScreen";
 import FullViewTransaction from "./src/screens/TransactionStack/FullViewTransaction";
+import AccountSetting from "./src/screens/SettingStack/AccountSetting";
 
 Mapbox.setAccessToken(
   "pk.eyJ1IjoiemVsbGRlbGwiLCJhIjoiY2x0d3hjdG91MDBheTJqczdqcHRjdWhpZSJ9.UyWdrUlPhJlQN-XE_JoP6Q"
@@ -46,7 +47,7 @@ export default function App() {
   return (
     <Provider store={store}>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <Layout style={styles.AndroidSafeArea}></Layout>
+        <Layout></Layout>
       </GestureHandlerRootView>
     </Provider>
   );
@@ -164,6 +165,11 @@ const MainStack = () => {
           component={TransactionListScreen}
           options={{ headerShown: false, animation: "slide_from_right" }}
         />
+        <Stack.Screen
+          name="AccountSetting"
+          component={AccountSetting}
+          options={{ headerShown: false, animation: "slide_from_right" }}
+        />
 
         {isNewUser && (
           <Stack.Screen
@@ -182,8 +188,8 @@ export const Layout = () => {
   useEffect(() => {
     const initializeDependecies = async () => {
       try {
-        dispatch(Logout());
-        // await dispatch(sendIsAuth());
+        // dispatch(Logout());
+        await dispatch(sendIsAuth());
         await dispatch(requestCrops());
       } catch (err) {
         console.log(err);
@@ -195,7 +201,11 @@ export const Layout = () => {
 
   return (
     <NavigationContainer>
-      {isAuthenticated ? <MainStack /> : <AuthStack />}
+      {isAuthenticated ? (
+        <MainStack style={styles.AndroidSafeArea} />
+      ) : (
+        <AuthStack />
+      )}
 
       <Toast config={toastConfig} />
     </NavigationContainer>

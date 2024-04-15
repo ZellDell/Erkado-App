@@ -3,52 +3,54 @@ import {
   Text,
   SafeAreaView,
   Image,
-  StatusBar,
-  Platform,
   StyleSheet,
-  TextInput,
-  ScrollView,
-  Button,
   TouchableOpacity,
   Dimensions,
   ActivityIndicator,
 } from "react-native";
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Logout } from "../../features/auth-actions";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { requestUserInfo } from "../../features/user-actions";
+
+import {
+  useNavigation,
+  useRoute,
+  useFocusEffect,
+} from "@react-navigation/native";
+
 import COLORS from "../../constant/colors";
-
-import Traderplaceholder from "../../../assets/profile/Default Trader.png";
-import Farmerplaceholder from "../../../assets/profile/Default Farmer.png";
-
-import ErkadoPlaceholder from "../../../assets/Erkado-logo.png";
-import ErkadoTextPlaceholder from "../../../assets/Erkado Text Fill.png";
 
 import Mapbox, { ShapeSource, LineLayer, Callout } from "@rnmapbox/maps";
 
-import Modal from "react-native-modal";
-import NewUserGreetingsModal from "../../components/HomeComponents/NewUserGreetingsModal";
 import { Icon } from "@rneui/base";
-import Toast from "react-native-toast-message";
-import PreparingScreen from "../PreparingScreen";
+
 import getRoute from "../../utils/getRoute";
+import PLACEHOLDER from "../../constant/profile";
 
 function TraderRoute() {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
+  const [refresh, setRefresh] = useState(true);
+
+  const toggleRefresh = () => {
+    setRefresh(!refresh);
+  };
+
   const route = useRoute();
 
   const userInfo = useSelector((state) => state.user.userInfo);
+
   const [traderRouteDetails, setTraderRouteDetails] = useState({
     Trader: route.params?.Trader,
     Address: route.params?.Address,
     Coordinates: route.params?.Coordinates,
   });
 
-  isNewUser = useSelector((state) => state.ui.isNewUser);
+  useFocusEffect(
+    React.useCallback(() => {
+      toggleRefresh();
+    }, [])
+  );
 
   const camera = useRef(null);
   const deviceHeight = Dimensions.get("window").height;
@@ -159,22 +161,34 @@ function TraderRoute() {
 
                   <Mapbox.PointAnnotation
                     id="UserPoint"
-                    key="UserPoint"
+                    key={refresh ? "UserPoint1" : "UserPoint2"}
+                    ref={(ref) => (this.markerRef = ref)}
                     coordinate={[
                       parseFloat(userInfo.coordinates.split(",")[1]),
                       parseFloat(userInfo.coordinates.split(",")[0]),
                     ]}
                   >
-                    <View className="rounded-full p-0.5 bg-white border-2 border-lime-400">
+                    <View
+                      className="rounded-full p-0.5 bg-white border-2 "
+                      style={{
+                        borderColor:
+                          userInfo.userType == "Trader" ? "#fb923c" : "#a3e635",
+                      }}
+                    >
                       <Image
                         source={
-                          userInfo.profileImg
-                            ? { uri: userInfo.profileImg }
-                            : Farmerplaceholder
+                          userInfo.profileImg != null
+                            ? {
+                                uri: userInfo.profileImg,
+                              }
+                            : userInfo.userType == "Trader"
+                            ? { uri: PLACEHOLDER.trader }
+                            : { uri: PLACEHOLDER.farmer }
                         }
                         style={{ width: 20, height: 20 }}
                         resizeMode="cover"
                         className=" rounded-full"
+                        onLoad={() => this.markerRef.refresh()}
                       />
                     </View>
                     <Callout title="You" />
@@ -183,22 +197,34 @@ function TraderRoute() {
                   {/* Target Marker */}
                   <Mapbox.PointAnnotation
                     id="TraderPoint"
-                    key="TraderPoint"
+                    key={refresh ? "TraderPoint1" : "TraderPoint2"}
+                    ref={(ref) => (this.markerRef2 = ref)}
                     coordinate={[
                       parseFloat(traderRouteDetails.Coordinates.longitude),
                       parseFloat(traderRouteDetails.Coordinates.latitude),
                     ]}
                   >
-                    <View className="rounded-full p-0.5 bg-white border-2 border-orange-400">
+                    <View
+                      className="rounded-full p-0.5 bg-white border-2 "
+                      style={{
+                        borderColor:
+                          userInfo.userType == "Trader" ? "#a3e635" : "#fb923c",
+                      }}
+                    >
                       <Image
                         source={
                           traderRouteDetails.Trader.profileImg
-                            ? { uri: traderRouteDetails.Trader.profileImg }
-                            : Traderplaceholder
+                            ? {
+                                uri: traderRouteDetails.Trader.profileImg,
+                              }
+                            : userInfo?.userType == "Trader"
+                            ? { uri: PLACEHOLDER.farmer }
+                            : { uri: PLACEHOLDER.trader }
                         }
                         style={{ width: 20, height: 20 }}
                         resizeMode="cover"
                         className=" rounded-full"
+                        onLoad={() => this.markerRef2.refresh()}
                       />
                     </View>
                     <Callout title={traderRouteDetails.Trader.Fullname} />
@@ -213,35 +239,38 @@ function TraderRoute() {
             className="flex-2 bg-white rounded-t-3xl z-10 -top-5 px-10 py-8 space-y-3"
             style={{ height: deviceHeight * 0.25 }}
           >
-            <View className="flex-row py-3 space-x-2 border-b-2 border-gray-300">
+            <View className="flex-row pb-3 space-x-2 border-b-2 border-gray-300">
               <Image
+                key={refresh ? "traderPlaceholder1" : "traderPlaceholder2"}
                 source={
-                  traderRouteDetails.Trader.profileImg
+                  traderRouteDetails?.Trader.profileImg
                     ? { uri: traderRouteDetails.Trader.profileImg }
-                    : Traderplaceholder
+                    : userInfo.userType == "Trader"
+                    ? { uri: PLACEHOLDER.farmer }
+                    : { uri: PLACEHOLDER.trader }
                 }
-                style={{ width: 55, height: 55 }}
+                style={{ width: 45, height: 45 }}
                 resizeMode="cover"
                 className=" rounded-full"
               />
               <View>
-                <Text className="font-bold text-2xl text-gray-800">
+                <Text className="font-bold text-lg text-gray-800">
                   {traderRouteDetails.Trader.Fullname}
                 </Text>
-                <Text className="font-bold text-lg pl-1 text-gray-500">
+                <Text className="font-bold text-xs pl-1 text-gray-500">
                   {traderRouteDetails.Trader.TraderType}
                 </Text>
               </View>
             </View>
 
-            <View className="flex-row py-3 space-x-2 pr-3">
+            <View className="flex-row  space-x-2 pr-3">
               <Icon
                 type="ionicon"
                 name="location"
                 size={30}
                 color={COLORS.primary}
               />
-              <Text className="font-semibold text-lg text-gray-500">
+              <Text className="font-semibold text-sm text-gray-500">
                 {traderRouteDetails.Address}
               </Text>
             </View>

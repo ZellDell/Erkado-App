@@ -1,31 +1,26 @@
 import {
   View,
-  Text,
-  SafeAreaView,
   Image,
-  StatusBar,
-  Platform,
-  StyleSheet,
-  TextInput,
-  ScrollView,
-  Button,
   TouchableOpacity,
   KeyboardAvoidingView,
+  Dimensions,
 } from "react-native";
-import React, { useEffect, useLayoutEffect, useState } from "react";
-import COLORS from "../../constant/colors";
-import ProgressBar from "react-native-animated-progress";
-import Fplaceholder from "../../../assets/profile/Default Farmer.png";
-import Tplaceholder from "../../../assets/profile/Default Trader.png";
+import React from "react";
+
 import { Icon } from "@rneui/base";
 import TextInputField from "../../components/General/TextInputField";
 import ImageModal from "./ImageModal";
 import { useSelector } from "react-redux";
+import PLACEHOLDER from "../../constant/profile";
+import { SafeAreaView } from "react-native-safe-area-context";
 function SetupProfileImage(props) {
   isFarmer = useSelector((state) => state.ui.isFarmer);
+
+  const deviceHeight = Dimensions.get("window").height;
+  const deviceWidth = Dimensions.get("window").width;
   return (
-    <View>
-      <View className="flex-row justify-center mb-12">
+    <View className="flex-1 space-y-2">
+      <View className="flex-row justify-center ">
         <ImageModal
           imageModal={props.imageModal}
           handleModal={props.handleModal}
@@ -37,16 +32,21 @@ function SetupProfileImage(props) {
           activeOpacity={0.6}
           onPress={props.handleModal}
         >
-          <View className="rounded-full bg-lime-500 shadow-2xl shadow-lime-500">
+          <View
+            className="rounded-full shadow-2xl shadow-lime-500"
+            style={{
+              borderColor: isFarmer ? "#fb923c" : "#a3e635",
+            }}
+          >
             <Image
               source={
                 props.uri
                   ? { uri: props.uri }
                   : isFarmer
-                  ? Fplaceholder
-                  : Tplaceholder
+                  ? { uri: PLACEHOLDER.farmer }
+                  : { uri: PLACEHOLDER.trader }
               }
-              style={{ width: 200, height: 200 }}
+              style={{ width: deviceWidth * 0.5, height: deviceWidth * 0.5 }}
               resizeMode="cover"
               className=" rounded-full"
             />
@@ -57,9 +57,9 @@ function SetupProfileImage(props) {
         </TouchableOpacity>
       </View>
       {/* FIELDS */}
-      <KeyboardAvoidingView>
+      <KeyboardAvoidingView className="flex-1">
         <TextInputField
-          placeholder="Firstname, Middlename, Lastname"
+          placeholder="Fullname"
           onChangeText={props.handleChangeFullname}
           value={props.fullname}
           iconName="person-add"

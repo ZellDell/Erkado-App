@@ -1,9 +1,6 @@
 import Toast from "react-native-toast-message";
-import { uiActions } from "./ui-slice";
-import { authActions } from "./auth-slice";
-import { userActions } from "./user-slice";
+
 import client from "../api/client";
-import authSlice from "./auth-slice";
 
 export const sendTransactionOffer = ({ crops, TraderUserID }) => {
   return async (dispatch) => {
@@ -36,17 +33,22 @@ export const sendTransactionOffer = ({ crops, TraderUserID }) => {
           message: err.response.data.message,
         };
       }
-      console.log(err.response.data ? err.response.data : err);
+
+      return {
+        error: true,
+        type: "WarningNotif",
+        message: err.error,
+      };
     }
   };
 };
 
-export const fetchTransaction = ({ UserType }) => {
+export const fetchTransaction = ({ UserType, query }) => {
   return async (dispatch) => {
     console.log(UserType);
     const sendRequest = async () => {
       const response = await client.get(`/transaction/`, {
-        params: { UserType },
+        params: { UserType, query },
       });
 
       return response;
@@ -54,7 +56,7 @@ export const fetchTransaction = ({ UserType }) => {
 
     try {
       const response = await sendRequest();
-      console.log(response.data);
+      console.log("%%%%", response.data);
 
       return { success: true, data: response.data };
     } catch (err) {
@@ -103,6 +105,28 @@ export const completeTransaction = (TransactionID) => {
         visibilityTime: 3000,
         swipeable: true,
       });
+
+      return { success: true, data: response.data };
+    } catch (err) {
+      console.log(err.response.data ? err.response.data : err);
+    }
+  };
+};
+
+export const TransactionViewAccess = (TransactionID, UserType, Status) => {
+  return async (dispatch) => {
+    const sendRequest = async () => {
+      const response = await client.post(`/transaction/access`, {
+        TransactionID,
+        UserType,
+        Status,
+      });
+
+      return response;
+    };
+
+    try {
+      const response = await sendRequest();
 
       return { success: true, data: response.data };
     } catch (err) {

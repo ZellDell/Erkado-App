@@ -3,43 +3,29 @@ import {
   Text,
   SafeAreaView,
   Image,
-  StatusBar,
-  Platform,
   StyleSheet,
-  TextInput,
   ScrollView,
-  Button,
   TouchableOpacity,
-  TouchableWithoutFeedback,
-  Keyboard,
-  TouchableHighlight,
   Dimensions,
-  FlatList,
   ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Icon } from "@rneui/base";
 import COLORS from "../../constant/colors";
-import Traderplaceholder from "../../../assets/profile/Default Trader.png";
-import Farmerplaceholder from "../../../assets/profile/Default Farmer.png";
+
 import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchMessages,
-  fetchMessagesWithTrader,
-} from "../../features/message-actions";
-import getTimeAgoUtil from "../../utils/getTimeAgoUtil";
+
 import {
   useNavigation,
   useRoute,
   useFocusEffect,
 } from "@react-navigation/native";
-import socket from "../../api/socket";
-import SenderChatBubble from "../../components/MessageComponent/SenderChatBubble";
-import ReceiverChatBubble from "../../components/MessageComponent/ReceiverChatBubble";
+
 import SelectCropToOfferModal from "../../components/TransactionComponents/SelectCropToOfferModal";
 import SetQuantityModal from "../../components/TransactionComponents/setQuantityModal";
 import { sendTransactionOffer } from "../../features/transaction-actions";
 import Toast from "react-native-toast-message";
+import PLACEHOLDER from "../../constant/profile";
 function OfferTransaction() {
   const dispatch = useDispatch();
   const navigation = useNavigation();
@@ -57,12 +43,16 @@ function OfferTransaction() {
   const [selectedCrops, setSelectedCrops] = useState([]);
 
   const [selectCropToOfferModal, setSelectCropToOffer] = useState(true);
-  const [initialSelection, setInitialSelection] = useState(false);
+  const [initialSelection, setInitialSelection] = useState(true);
 
   let Total = 0;
 
-  handleSelectCropToOffer = () => {
+  handleSelectCropToOffer = (isDecline) => {
     if (initialSelection) {
+      if (isDecline) {
+        navigation.goBack();
+        return;
+      }
       setInitialSelection(false);
       setSelectCropToOffer(!selectCropToOfferModal);
     }
@@ -129,6 +119,7 @@ function OfferTransaction() {
         props: { header: "Error" },
         text1: result.message,
       });
+      return;
     }
 
     if (result.success) {
@@ -162,35 +153,35 @@ function OfferTransaction() {
             "
         style={[styles.shadow]}
       >
-        <Text className="self-center text-gray-800 font-bold text-lg">
+        <Text className="self-center text-gray-800 font-bold text-base">
           Transaction Offer
         </Text>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          className="absolute top-10 left-3 p-3 bg-white z-20 rounded-full"
+          className="absolute top-10 left-3 p-2 bg-white z-20 rounded-full"
           style={styles.shadow}
         >
-          <Icon type="ionicon" name="arrow-back" size={30} color="#374151" />
+          <Icon type="ionicon" name="arrow-back" size={25} color="#374151" />
         </TouchableOpacity>
 
-        <View className="flex-2 space-x-2 w-full mt-5 mr-3 items-center">
+        <View className="flex-2 space-x-2 w-full mr-3 items-center">
           <Image
             source={
               InfoDetails?.ProfileImg
                 ? { uri: InfoDetails?.ProfileImg }
                 : userType == "Farmer"
-                ? Traderplaceholder
-                : Farmerplaceholder
+                ? { uri: PLACEHOLDER.trader }
+                : { uri: PLACEHOLDER.farmer }
             }
-            style={{ width: 70, height: 70 }}
+            style={{ width: 60, height: 60 }}
             resizeMode="cover"
             className="m-2 rounded-full"
           />
-          <Text className="font-bold text-2xl text-gray-700 text-gray-">
+          <Text className="font-bold text-xl text-gray-700 text-gray-">
             {InfoDetails.Fullname}
           </Text>
           {userType == "Farmer" && (
-            <Text className="font-semibold text-lg text-gray-500 text-gray-">
+            <Text className="font-semibold text-sm text-gray-500 text-gray-">
               {InfoDetails.TraderType}
             </Text>
           )}
@@ -239,7 +230,7 @@ function OfferTransaction() {
                     "-" +
                     traderCrop.PricePerUnit
                   }
-                  className="flex-row justify-between py-6 px-8 bg-white items-center mt-2"
+                  className="flex-row justify-between py-6 px-5 bg-white items-center mt-2"
                 >
                   <View className="flex-row space-x-2 items-center flex-1">
                     <Image
@@ -254,40 +245,23 @@ function OfferTransaction() {
                       </Text>
                       <Text className="text-gray-500 font-medium text-xs">
                         {traderCrop.CropType && traderCrop.CropType.length > 8
-                          ? traderCrop.CropType.substring(0, 6) + "..."
+                          ? traderCrop.CropType.substring(0, 8) + "..."
                           : traderCrop.CropType}{" "}
                         |{" "}
                         {qualityType.QualityType &&
-                        qualityType.QualityType.length > 6
+                        qualityType.QualityType.length > 8
                           ? qualityType.QualityType.substring(0, 8) + "..."
                           : qualityType.QualityType}
                       </Text>
-
-                      <Text className="text-gray-800 text-xs font-bold mt-1">
-                        Quantity: {traderCrop.Quantity}
-                      </Text>
-                      <Text className="text-lime-600 text-xs font-bold mt-1">
-                        Total: ₱{" "}
-                        {(
-                          traderCrop.Quantity * traderCrop.PricePerUnit
-                        ).toFixed(2)}
+                      <Text className="text-gray-800 font-semibold text-xs ">
+                        Per Kilo : ₱ {traderCrop.PricePerUnit.toFixed(2)}
                       </Text>
                     </View>
                   </View>
-                  <View className="items-center flex-1">
-                    <Text className="text-gray-500 font-medium text-xs">
-                      Per Sack
-                    </Text>
-                    <Text
-                      className="text-gray-800 font-semibold text-lg "
-                      style={{ color: COLORS.primary }}
-                    >
-                      ₱ {traderCrop.PricePerUnit.toFixed(2)}
-                    </Text>
-                  </View>
-                  <View className=" flex-row space-x-3 items-center justify-between">
+
+                  <View className=" space-x-3 items-end">
                     <TouchableOpacity
-                      className="px-4 py-2 rounded-md  justify-center"
+                      className="py-1.5 px-1.5 rounded-md  flex-row space-x-2 justify-center items-center"
                       onPress={() => {
                         setSelectedCropQuantity(traderCrop);
                         handleQuantityModal();
@@ -298,10 +272,19 @@ function OfferTransaction() {
                         name="pencil"
                         type="ionicon"
                         color="#ffffff"
-                        size={20}
+                        size={15}
                       />
                       <Text className="text-white font-bold text-xs">Edit</Text>
                     </TouchableOpacity>
+                    <Text className="text-gray-800 text-xs font-bold mt-1">
+                      Quantity: {traderCrop.Quantity}
+                    </Text>
+                    <Text className="text-green-600 text-sm font-bold mt-1">
+                      Total: ₱{" "}
+                      {(traderCrop.Quantity * traderCrop.PricePerUnit).toFixed(
+                        2
+                      )}
+                    </Text>
                   </View>
                 </View>
               );

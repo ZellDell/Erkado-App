@@ -8,10 +8,8 @@ import SettingScreen from "../SettingStack/SettingScreen";
 import TraderProfile from "../HomeStack/TraderProfile";
 
 import { Icon } from "@rneui/base";
-import { Keyboard, StyleSheet } from "react-native";
+
 import { useSelector } from "react-redux";
-import { View, Text } from "react-native";
-import { useEffect, useState } from "react";
 
 const Tab = createBottomTabNavigator();
 

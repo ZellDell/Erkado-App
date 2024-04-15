@@ -1,6 +1,3 @@
-import Toast from "react-native-toast-message";
-import { uiActions } from "./ui-slice";
-import { authActions } from "./auth-slice";
 import client from "../api/client";
 import { cropActions } from "./crop-slice";
 
@@ -25,7 +22,7 @@ export const requestCrops = () => {
         QualityType: crop.QualityType,
         QualityTypeID: crop.QualityTypeID,
       }));
-      console.log(crops, quality);
+
       dispatch(cropActions.setCrops({ crops }));
       dispatch(cropActions.setQuality({ quality }));
     } catch (err) {

@@ -1,24 +1,10 @@
-import {
-  View,
-  Text,
-  SafeAreaView,
-  Image,
-  StatusBar,
-  Platform,
-  StyleSheet,
-  TextInput,
-  ScrollView,
-  Button,
-  TouchableOpacity,
-  KeyboardAvoidingView,
-  Keyboard,
-  ActivityIndicator,
-} from "react-native";
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import COLORS from "../../constant/colors";
-import Traderplaceholder from "../../../assets/profile/Default Trader.png";
-import Farmerplaceholder from "../../../assets/profile/Default Farmer.png";
-import { useDispatch, useSelector } from "react-redux";
+import { View, Text, Image } from "react-native";
+import React from "react";
+
+import { useSelector } from "react-redux";
+
+import PLACEHOLDER from "../../constant/profile";
+
 function ReceiverChatBubble({ profileImg, message, timeAgo }) {
   const userType = useSelector((state) => state.user.userInfo.userType);
   const bg = userType == "Trader" ? "#84cc16" : "#fb923c";
@@ -33,8 +19,8 @@ function ReceiverChatBubble({ profileImg, message, timeAgo }) {
           profileImg
             ? { uri: profileImg }
             : userType == "Farmer"
-            ? Traderplaceholder
-            : Farmerplaceholder
+            ? { uri: PLACEHOLDER.trader }
+            : { uri: PLACEHOLDER.farmer }
         }
       />
       <Text className="text-lg/loose text-zinc-100 font-bold">{message}</Text>

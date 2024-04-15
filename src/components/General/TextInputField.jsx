@@ -1,13 +1,6 @@
 import { Icon } from "@rneui/base";
 import React, { useRef, useState } from "react";
-import {
-  Animated,
-  Easing,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { Animated, Easing, StyleSheet, TextInput, View } from "react-native";
 
 const TextInputField = (props) => {
   const [isFocused, setIsFocused] = useState(false);

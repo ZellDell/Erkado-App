@@ -1,17 +1,5 @@
-import {
-  View,
-  Text,
-  SafeAreaView,
-  Image,
-  StatusBar,
-  Platform,
-  StyleSheet,
-  TextInput,
-  ScrollView,
-  Button,
-  TouchableOpacity,
-} from "react-native";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import { View, Text, TouchableOpacity } from "react-native";
+import React from "react";
 import Modal from "react-native-modal";
 import { Icon } from "@rneui/base";
 
@@ -31,7 +19,7 @@ function ImageModal({ imageModal, handleModal, uploadImage, removeImage }) {
           <View className="flex-row  bg-white rounded-md py-5 px-2 space-x-7 justify-center">
             {/* Open Camera */}
             <TouchableOpacity
-              className=" bg-slate-200 p-4 rounded-xl"
+              className=" bg-slate-200 p-3 rounded-xl"
               onPress={uploadImage}
             >
               <Icon
@@ -40,12 +28,12 @@ function ImageModal({ imageModal, handleModal, uploadImage, removeImage }) {
                 color="#60BB46"
                 size={30}
               />
-              <Text className=" font-bold text-md ">Camera</Text>
+              <Text className=" font-bold text-xs ">Camera</Text>
             </TouchableOpacity>
 
             {/* Open Gallery */}
             <TouchableOpacity
-              className=" bg-slate-200 p-4 rounded-xl"
+              className=" bg-slate-200 p-3 rounded-xl"
               onPress={() => uploadImage("gallery")}
             >
               <Icon
@@ -54,12 +42,12 @@ function ImageModal({ imageModal, handleModal, uploadImage, removeImage }) {
                 color="#60BB46"
                 size={30}
               />
-              <Text className=" font-bold text-md ">Gallery</Text>
+              <Text className=" font-bold text-xs ">Gallery</Text>
             </TouchableOpacity>
 
             {/* Remove Image */}
             <TouchableOpacity
-              className=" bg-slate-200  p-4 rounded-xl "
+              className=" bg-slate-200  p-3 rounded-xl "
               onPress={removeImage}
             >
               <Icon
@@ -68,7 +56,7 @@ function ImageModal({ imageModal, handleModal, uploadImage, removeImage }) {
                 color="#555555"
                 size={30}
               />
-              <Text className="  font-bold text-md ">Remove</Text>
+              <Text className="  font-bold text-xs ">Remove</Text>
             </TouchableOpacity>
           </View>
         </Modal>

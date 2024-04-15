@@ -25,6 +25,11 @@ export const sendLogin = (username, password) => {
       const userID = result.data.userId;
       const userType = result.data.UserType;
 
+      await dispatch(
+        userActions.setUserInfo({
+          userType: userType,
+        })
+      );
       if (userType === "Farmer") {
         dispatch(uiActions.setFarmer(true));
       } else {
